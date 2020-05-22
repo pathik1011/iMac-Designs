@@ -1,0 +1,11 @@
+li#accordion-section-xpertiz_upsell_section h3 .xpertiz_upsell {
+    text-decoration: none;
+}
+
+li#accordion-section-xpertiz_upsell_section h3 {
+    margin-left: 20px;
+}
+
+li#accordion-section-xpertiz_upsell_section {
+    display: block !important;
+}

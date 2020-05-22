@@ -1,0 +1,309 @@
+
+---Downloaded files---
+The import files for: Xpertiz IT were successfully downloaded!
+Initial max execution time = 900
+Files info:
+Site URL = http://127.0.0.1/imac_designs
+Data file = D:\xampp\htdocs\imac_designs/wp-content/uploads/2020/04/demo-content-import-file_2020-04-08__07-05-53.xml
+Widget file = D:\xampp\htdocs\imac_designs/wp-content/uploads/2020/04/demo-widgets-import-file_2020-04-08__07-05-53.json
+Customizer file = D:\xampp\htdocs\imac_designs/wp-content/uploads/2020/04/demo-customizer-import-file_2020-04-08__07-05-53.dat
+Redux files:
+not defined!
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "hero-video-transcode" (Media)
+[ERROR] Failed to import "Computer Keyboard - 3174" (Media)
+[ERROR] Failed to import "Lights - 13441" (Media)
+[ERROR] Failed to import "Smartphone - 3168" (Media)
+[ERROR] Failed to import "Presentation Video - 27411" (Media)
+[ERROR] Failed to import "Space - 5200" (Media)
+[ERROR] Failed to import "dummy" (Media)
+
+
+---Importing widgets---
+sidebar : Sidebar does not exist in theme (moving widget to Inactive)
+
+Search - No Title - Widget already exists
+Recent Posts - No Title - Widget already exists
+Recent Comments - No Title - Widget already exists
+Archives - No Title - Imported to Inactive
+Categories - No Title - Imported to Inactive
+Meta - No Title - Imported to Inactive
+
+
+
+---Importing customizer settings---
+Customizer settings import finished!
+
+---vt-VAST_OCDI/after_import---
+

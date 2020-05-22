@@ -1,0 +1,4 @@
+.mce-floatpanel.mce-popover.mce-bottom,
+.mce-floatpanel.mce-window.mce-in {
+    z-index: 999999 !important;
+}

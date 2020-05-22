@@ -1,0 +1,38 @@
+p {
+    color: #333;
+  }
+.single-post .uf-single-post__content a,
+.single-post .uf-single-post__content li a {
+    font-family: Lato,sans-serif!important;
+    font-size: 1rem;
+}
+.single-post blockquote p, 
+.single-post li,
+.single-post p,
+.single-post p a {
+    font-family: Lato,sans-serif!important;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: normal;
+}
+
+.single-post h2 {
+    line-height: 1.2em;
+}
+
+.icon-search::before {
+    content: '\e917' !important;
+}
+
+.icon-chevron-right::before {
+    content: '\e905' !important;
+}
+
+.icon-chevron-left::before {
+    content: '\e904' !important;
+}
+
+.mfp-wrap.ekit-promo-popup {
+    position: fixed !important;
+}
