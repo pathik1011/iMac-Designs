@@ -116,11 +116,12 @@ Class MetForm_Input_Button extends Widget_Base{
 
     protected function render($instance = []){
 
-        $settings = $this->get_settings_for_display();
+		$settings = $this->get_settings_for_display();
+
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 
         $btn_text = $settings['mf_btn_text'];
-        $btn_class = ($settings['mf_btn_class'] != '') ? $settings['mf_btn_class'] : '';
-        $btn_id = ($settings['mf_btn_id'] != '') ? 'id='.$settings['mf_btn_id'] : '';
 		$icon_align = $settings['mf_btn_icon_align'];
 
 		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
@@ -130,25 +131,39 @@ Class MetForm_Input_Button extends Widget_Base{
 		if(!empty($hidden_inputs)){
 			foreach($hidden_inputs as $input){
 				$input = (object) $input;
-				echo "<input type='hidden' class=".esc_attr($input->mf_hidden_input_class)." name=".esc_attr($input->mf_hidden_input_name)." value=".esc_attr($input->mf_hidden_input_value).">";
+				?>
+					<input type="hidden" name="<?php echo esc_attr( $input->mf_hidden_input_name ); ?>" class="<?php echo esc_attr( $input->mf_hidden_input_class ); ?>" value="<?php echo esc_attr( $input->mf_hidden_input_value ); ?>" ref=${parent.setDefault} />
+				<?php
 			}
 		}
 
+		$this->add_render_attribute(
+			'button',
+			[
+				'type'	=> 'submit',
+				'class'	=> 'metform-btn metform-submit-btn ' . $settings['mf_btn_class'],
+				'id'	=> $settings['mf_btn_id'],
+			]
+		);
+
+		if ( !$is_edit_mode ):
+			$this->add_render_attribute( 'button', 'disabled', '${parent.state.form_res}' );
+		endif;
 		?>
 		<div class="mf-btn-wraper <?php echo esc_attr($class); ?>" data-mf-form-conditional-logic-requirement="<?php echo esc_attr(isset($settings['mf_conditional_logic_form_and_or_operators']) ? $settings['mf_conditional_logic_form_and_or_operators'] : ''); ?>">
 			<?php if($icon_align == 'right'): ?>
-				<button type="submit" class="metform-btn metform-submit-btn <?php echo esc_attr( $btn_class ); ?>" <?php echo esc_attr($btn_id); ?>>
-					<?php echo esc_html( $btn_text ); ?>
+				<button <?php echo $this->get_render_attribute_string( 'button' ); ?>>
+					<span><?php echo apply_filters( 'metform_button_text', esc_html( $btn_text ), $render_on_editor ); ?></span>
 					<?php if($settings['mf_btn_icon']['value'] != ''): ?><?php Icons_Manager::render_icon( $settings['mf_btn_icon'], [ 'aria-hidden' => 'true' ] ); ?><?php endif; ?>
 				</button>
-				<?php elseif ($icon_align == 'left') : ?>
-				<button type="submit" class="metform-btn metform-submit-btn <?php echo esc_attr( $btn_class); ?>" <?php echo esc_attr($btn_id); ?>>
+			<?php elseif ($icon_align == 'left') : ?>
+				<button <?php echo $this->get_render_attribute_string( 'button' ); ?>>
 					<?php if($settings['mf_btn_icon']['value'] != ''): ?><?php Icons_Manager::render_icon( $settings['mf_btn_icon'], [ 'aria-hidden' => 'true' ] ); ?><?php endif; ?>
-					<?php echo esc_html( $btn_text ); ?>
+					<span><?php echo apply_filters( 'metform_button_text', esc_html( $btn_text ), $render_on_editor ); ?></span>
 				</button>
-				<?php else : ?>
-				<button type="submit" class="metform-btn metform-submit-btn <?php echo esc_attr( $btn_class); ?>" <?php echo esc_attr($btn_id); ?>>
-					<?php echo esc_html( $btn_text ); ?>
+			<?php else : ?>
+				<button <?php echo $this->get_render_attribute_string( 'button' ); ?>>
+					<span><?php echo apply_filters( 'metform_button_text', esc_html( $btn_text ), $render_on_editor ); ?></span>
 				</button>
 			<?php endif; ?>
         </div>

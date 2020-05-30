@@ -5,13 +5,8 @@ defined( 'ABSPATH' ) || exit;
 Class MetForm_Input_Summary extends Widget_Base{
 
 	use \MetForm\Traits\Common_Controls;
-	use \MetForm\Traits\Conditional_Controls;
+    use \MetForm\Traits\Conditional_Controls;
 	use \MetForm\Widgets\Widget_Notice;
-    
-    public function __construct( $data = [], $args = null ) {
-		parent::__construct( $data, $args );
-        $this->add_script_depends('metform-summary');
-    }
 
     public function get_name() {
 		return 'mf-summary';
@@ -56,6 +51,15 @@ Class MetForm_Input_Summary extends Widget_Base{
 		);
 
 		$this->input_setting_controls();
+
+		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
 
 		$this->end_controls_section();
 		
@@ -108,33 +112,40 @@ Class MetForm_Input_Summary extends Widget_Base{
 		$settings = $this->get_settings_for_display();
 		extract($settings);
 
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+
 		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		?>
 
-		echo "<div class='mf-input-wrapper'>";
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-text-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+			
+			<?php if ( !$is_edit_mode ): ?>
+				<div class="mf-input mf-input-summary metform-entry-data container">
+					<ul class="mf-entry-data">
+						${Object.keys( parent.state.formData ).map((name, key) => {
+							let value = parent.getValue( name );
+							if ( Array.isArray( value ) ) value = value.join(', ');
+							if ( typeof value === 'object' && value.name ) value = value.name;
 
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-text-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-			</label>
-			<?php
-		}
-		if(('metform-form' == get_post_type() || 'page' == get_post_type()) && \Elementor\Plugin::$instance->editor->is_edit_mode()){
-			echo "<div class='attr-alert attr-alert-warning'>".esc_html__('Summary will be shown on preview.', 'metform')."</div>";
-		}
-        ?>
-		<div class="mf-input mf-input-summary metform-entry-data container">
-            <table class='mf-entry-data' cellpadding="5" cellspacing="0">
-				<tbody>
+							return value ? html`<li key=${key}><strong>${name}</strong><span>${value}</span></li>` : '';
+						})}
+					</ul>
+				</div>
+			<?php else: ?>
+				<div class="attr-alert attr-alert-warning" style="margin-bottom: 0;">
+					<?php esc_html_e( 'Summary will be shown on preview.', 'metform' ); ?>
+				</div>
+			<?php endif; ?>
+			
+			<?php echo '' != $mf_input_help_text ? '<span class="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
 
-				</tbody>
-            </table>
-        </div>
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
-    
 }

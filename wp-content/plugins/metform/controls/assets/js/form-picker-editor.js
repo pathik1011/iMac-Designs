@@ -1,4 +1,4 @@
-( function (jQuery, elementor) {
+( function (jQuery, elementor, oElementor) {
     "use strict";
 
     var ElementsKit_WidgetArea = {
@@ -174,6 +174,30 @@
                 window.parent.jQuery('#metform-open-content-editor').find('.metform-open-content-editor-templates').on('change', function(){
                     window.parent.jQuery('#metform-open-content-editor').find('.metform-picker-close').fadeIn();
                 });
+
+                // update and close
+                var updateClose = window.parent.jQuery('.metform-form-update-close-btn');
+                updateClose.off('click.metform').on('click.metform', function(){
+                    var iframeModal = window.parent.jQuery('.metform-dynamic-content-modal'),
+                        iframe = iframeModal.find('#formpicker-control-iframe'),
+                        iframeWindow = (iframe[0].contentWindow || iframe[0].contentDocument),
+                        needSaving = iframeWindow.jQuery('#elementor-panel-saver-button-publish:not([disabled])').hasClass('elementor-disabled');
+
+                    if(!needSaving){
+                        iframeWindow.jQuery('#elementor-panel-saver-button-publish:not([disabled])').trigger('click');
+                        var checkExist = setInterval(function() {
+                            if(iframeWindow.jQuery('#elementor-panel-saver-button-publish:not([disabled])').hasClass('elementor-disabled')) {
+                                window.parent.jQuery('.metform-close-editor-modals').trigger('click.metform');
+                                clearInterval(checkExist);
+                            }
+                         }, 100); // check every 100ms
+                    } else {
+                        window.parent.jQuery('.metform-close-editor-modals').trigger('click.metform');
+                    }
+                    
+                });
+                // end update and close
+
             });
         },
     };

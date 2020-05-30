@@ -14,7 +14,7 @@ final class Plugin{
     }
     
     public function version(){
-        return '1.2.3';
+        return '1.3.0';
     }
 
     public function package_type(){
@@ -127,19 +127,18 @@ final class Plugin{
     }
 
     function js_css_public(){
+        $is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->preview->is_preview_mode();
 
-        wp_enqueue_style('asRange', $this->public_url().'assets/css/asRange.min.css', false, $this->version());
-        wp_enqueue_style('select2', $this->public_url().'assets/css/select2.min.css', false, $this->version());
-        wp_enqueue_style('flatpickr', $this->public_url().'assets/css/flatpickr.min.css', false, $this->version());
         wp_enqueue_style('metform-ui', $this->public_url().'assets/css/metform-ui.css', false, $this->version());
         wp_enqueue_style('metform-style', $this->public_url().'assets/css/style.css', false, $this->version());
         
-        wp_enqueue_script('validate', $this->public_url().'assets/js/jquery.validate.min.js', array(), $this->version(), true);
-        wp_enqueue_script('asRange', $this->public_url().'assets/js/jquery-asRange.min.js', array(), $this->version(), true);
-        wp_enqueue_script('select2', $this->public_url().'assets/js/select2.min.js', array(), $this->version(), true);
-        wp_enqueue_script('flatpickr', $this->public_url().'assets/js/flatpickr.js', array(), $this->version(), true);
-        
-        wp_register_script('recaptcha-v2', 'https://www.google.com/recaptcha/api.js?onload=onloadMetFormCallback&render=explicit', array(), $this->version(), false);
+        wp_register_style('asRange', $this->public_url().'assets/css/asRange.min.css', false, $this->version());
+        wp_register_script('asRange', $this->public_url().'assets/js/jquery-asRange.min.js', array(), $this->version(), true);
+
+        wp_register_style('mf-select2', $this->public_url().'assets/css/select2.min.css', false, $this->version());
+        wp_register_script('mf-select2', $this->public_url().'assets/js/select2.min.js', array(), $this->version(), true);
+
+        wp_register_script('recaptcha-v2', 'https://google.com/recaptcha/api.js', array(), null, true);
 
         $this->global_settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
 
@@ -148,23 +147,19 @@ final class Plugin{
         }
 
         if(isset($this->global_settings['mf_google_map_api_key']) && ( $this->global_settings['mf_google_map_api_key'] != '' ) ){
-            wp_register_script( 'maps-api', 'https://maps.googleapis.com/maps/api/js?key='.$this->global_settings['mf_google_map_api_key'].'&libraries=places&callback=metformMapAutoComplete', array(), '', true );
+            wp_register_script( 'maps-api', 'https://maps.googleapis.com/maps/api/js?key='.$this->global_settings['mf_google_map_api_key'].'&libraries=places&&callback=mfMapLocation', array(), '', true );
         }
 
-        wp_enqueue_script('metform-submission', $this->public_url().'assets/js/submission.js', array(), null, true);
-        wp_localize_script('metform-submission', 'mf_submission', array(
-            'default_required_message'  => esc_html__('This field is required.', 'metform')
-        ));
+        wp_deregister_style('flatpickr'); // flatpickr stylesheet
+        wp_register_style('flatpickr', $this->public_url().'assets/css/flatpickr.min.css', false, $this->version()); // flatpickr stylesheet
         
-        if(! \Elementor\Plugin::$instance->preview->is_preview_mode()){
-            $rest_url = get_rest_url( null, 'metform/v1/forms/');
-            wp_enqueue_script('metform-count-views', $this->public_url().'assets/js/count-views.js', array(), $this->version(), true);
-            wp_localize_script('metform-count-views', 'rest_api', array(
-                'end_point'  => $rest_url
-            ));
-        }
+        wp_enqueue_script('htm', $this->public_url().'assets/js/htm.js', null, $this->version(), true);
 
-        wp_register_script('metform-summary', $this->public_url().'assets/js/summary.js', array(), $this->version(), true);
+        wp_enqueue_script('metform-app', $this->public_url().'assets/js/app.js', array('htm', 'jquery'), $this->version(), true);
+        wp_localize_script('metform-app', 'mf', array(
+            'postType' => get_post_type(),
+            'restURI' => get_rest_url( null, 'metform/v1/forms/views/')
+        ));
         
         do_action('metform/onload/enqueue_scripts');
     }
@@ -185,11 +180,6 @@ final class Plugin{
     }
 
     public function elementor_js() {
-        wp_enqueue_script('metform-inputs', $this->public_url().'assets/js/inputs.js', array('elementor-frontend'), $this->version(), true);
-        wp_localize_script('metform-inputs', 'mf_plugin', array(
-            'mf_dir' => plugin_dir_url(__FILE__),
-        ));
-
     }
 
     public function elementor_css(){

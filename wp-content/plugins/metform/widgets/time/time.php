@@ -6,6 +6,11 @@ Class MetForm_Input_Time extends Widget_Base{
 	use \MetForm\Traits\Common_Controls;
 	use \MetForm\Traits\Conditional_Controls;
 	use \MetForm\Widgets\Widget_Notice;
+	
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->add_style_depends('flatpickr');
+	}
 
     public function get_name() {
 		return 'mf-time';
@@ -50,6 +55,15 @@ Class MetForm_Input_Time extends Widget_Base{
 		);
 
 		$this->input_setting_controls();
+
+		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
 
 		$this->add_control(
 			'mf_input_time_24h',
@@ -128,31 +142,75 @@ Class MetForm_Input_Time extends Widget_Base{
 
     protected function render($instance = []){
 		$settings = $this->get_settings_for_display();
+		$inputWrapStart = $inputWrapEnd = '';
 		extract($settings);
 		
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		$render_on_editor = true;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 
-		echo "<div class='mf-input-wrapper'>";
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
 		
-        if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-time-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-			</label>
-			<?php
+		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+		];
+		
+		$timeConfig = [
+			'enableTime' 	=> true,
+			'dateFormat'	=> 'h:i K',
+			'noCalendar' 	=>  true,
+			'time_24hr'		=> false,
+			'static'		=> true
+		];
+		
+		if(isset($mf_input_time_24h) && $mf_input_time_24h === 'yes'){
+			$timeConfig['time_24hr']	= true;
+			$timeConfig['dateFormat']	= 'h:i';
 		}
-        ?>
-		<input type="time" class="mf-input mf-input-time <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-time-<?php echo esc_attr($this->get_id()); ?>" 
-			name="<?php echo esc_attr($mf_input_name); ?>"
-			placeholder="<?php echo esc_html($mf_input_placeholder); ?>"
-			<?php echo esc_attr(($mf_input_time_24h === 'yes') ? 'data-mftime24h=yes' : '')?>
-			<?php //echo esc_attr($mf_input_readonly_status); ?>
-		>
+		?>
+		
+		<?php echo $inputWrapStart; ?>
+
+		<div className="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label className="mf-input-label" htmlFor="mf-input-time-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span className="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+			
+			<${props.Flatpickr}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					className="mf-input mf-date-input mf-left-parent <?php echo esc_attr( $class ); ?>"
+					placeholder="<?php echo apply_filters( 'metform_placeholder', esc_attr($mf_input_placeholder), $render_on_editor ); ?>"
+					options=${<?php echo json_encode( $timeConfig ); ?>}
+					value=${parent.getValue('<?php echo esc_attr( $mf_input_name ); ?>')}
+					onInput=${parent.handleDateTime}
+					aria-invalid=${validation.errors['<?php echo esc_attr( $mf_input_name ); ?>'] ? 'true' : 'false'}
+					ref=${register({ name: "<?php echo esc_attr($mf_input_name); ?>" }, parent.activateValidation(<?php echo json_encode($configData); ?>))}
+					/>
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+			
+			<?php echo '' != $mf_input_help_text ? '<span className="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+		
+		<?php echo $inputWrapEnd; ?>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
 
 }

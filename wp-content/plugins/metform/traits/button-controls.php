@@ -47,18 +47,23 @@ trait Button_Controls{
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left'    => [
-						'title' =>esc_html__( 'Left', 'metform' ),
+						'title' => esc_html__( 'Left', 'metform' ),
 						'icon' => 'fa fa-align-left',
 					],
 					'center' => [
-						'title' =>esc_html__( 'Center', 'metform' ),
+						'title' => esc_html__( 'Center', 'metform' ),
 						'icon' => 'fa fa-align-center',
 					],
 					'right' => [
-						'title' =>esc_html__( 'Right', 'metform' ),
+						'title' => esc_html__( 'Right', 'metform' ),
 						'icon' => 'fa fa-align-right',
 					],
+					'justify' => [
+						'title' => esc_html__( 'Justified', 'metform' ),
+						'icon' => 'fa fa-align-justify',
+					],
 				],
+				'prefix_class' => 'mf-btn-%s-',
 				'default' => 'center',
 				'selectors' => [
 					'{{WRAPPER}} .mf-btn-wraper' => 'text-align: {{VALUE}};',
@@ -213,7 +218,6 @@ trait Button_Controls{
             array(
 				'name'     => 'mf_btn_bg_color',
                 'selector' => '{{WRAPPER}} .metform-btn',
-                'default' => '#337ab7',
             )
         );
 

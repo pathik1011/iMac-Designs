@@ -64,7 +64,6 @@ Class Manifest{
 		require_once plugin_dir_path(__FILE__) . 'range/range.php';
 		require_once plugin_dir_path(__FILE__) . 'url/url.php';
 		require_once plugin_dir_path(__FILE__) . 'password/password.php';
-		require_once plugin_dir_path(__FILE__) . 'response/response.php';
 		require_once plugin_dir_path(__FILE__) . 'listing-fname/listing-fname.php';
 		require_once plugin_dir_path(__FILE__) . 'listing-lname/listing-lname.php';
 		require_once plugin_dir_path(__FILE__) . 'listing-optin/listing-optin.php';
@@ -98,7 +97,6 @@ Class Manifest{
 		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Range() );
 		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Url() );
 		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Password() );
-		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Response() );
 		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Listing_Fname() );
 		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Listing_Lname() );
 		\Elementor\Plugin::instance()->widgets_manager->register_widget_type( new \Elementor\MetForm_Input_Listing_Optin() );

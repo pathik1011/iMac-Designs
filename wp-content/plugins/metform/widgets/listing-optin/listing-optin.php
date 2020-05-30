@@ -92,6 +92,7 @@ Class MetForm_Input_Listing_Optin extends Widget_Base{
 				'label' => esc_html__( 'Name : ', 'metform' ),
 				'type' => Controls_Manager::HIDDEN,
 				'default' => $this->get_name(),
+				'frontend_available'	=> true
 			]
 		);
 
@@ -158,6 +159,15 @@ Class MetForm_Input_Listing_Optin extends Widget_Base{
 		);
 
 		$this->input_setting_controls();
+
+		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
 
 		$this->end_controls_section();
 
@@ -250,19 +260,19 @@ Class MetForm_Input_Listing_Optin extends Widget_Base{
 		$this->add_control(
 			'mf_input_required_indicator_color',
 			[
-				'label' => esc_html__( 'Required indicator color:', 'metform' ),
+				'label' => esc_html__( 'Required Indicator Color:', 'metform' ),
 				'type' => Controls_Manager::COLOR,
 				'scheme' => [
 					'type' => Scheme_Color::get_type(),
 					'value' => Scheme_Color::COLOR_1,
 				],
-				'default' => '#FF0000',
+				'default' => '#f00',
 				'selectors' => [
-					'{{WRAPPER}} .mf-input-label .mf-input-required-indicator,{{WRAPPER}} .mf-input-wrapper.mf-field-error .mf-checkbox-option,  {{WRAPPER}} .mf-input-wrapper .error' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .mf-input-required-indicator, {{WRAPPER}} .mf-error-message' => 'color: {{VALUE}}',
 				],
-				// 'condition'    => [
-                //     'mf_input_required' => 'yes',
-                // ],
+				'condition' => [
+                    'mf_input_required' => 'yes',
+                ],
 			]
 		);
 
@@ -430,6 +440,21 @@ Class MetForm_Input_Listing_Optin extends Widget_Base{
         );
 
         $this->end_controls_section();
+		
+        $this->start_controls_section(
+			'help_text_section',
+			[
+				'label' => esc_html__( 'Help Text', 'metform' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'mf_input_help_text!' => ''
+				]
+			]
+		);
+		
+		$this->input_help_text_controls();
+
+        $this->end_controls_section();
 
         $this->insert_pro_message();
 	}
@@ -438,33 +463,66 @@ Class MetForm_Input_Listing_Optin extends Widget_Base{
 		$settings = $this->get_settings_for_display();
         extract($settings);
 
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 
-		echo "<div class='mf-input-wrapper'>";
+		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
 		
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-checkbox-label mf-input-label" for="mf-input-optin-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : ''); ?></span>
-			</label>
-			<?php
-		}
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+		];
 		?>
-        <div class="mf-checkbox" id="mf-input-optin-<?php echo esc_attr($this->get_id()); ?>">
-            <div class="mf-checkbox-option">
-				<label><?php echo \MetForm\Utils\Util::kses(($mf_listing_optin_option_text_position == 'before') ? $mf_listing_optin_option_text :''); ?>
-						<input type="checkbox" class="mf-input mf-checkbox-input <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" name="<?php echo esc_attr($mf_input_name); ?>" 
-						value="1"
-						>
-					<span><?php echo \MetForm\Utils\Util::kses(($mf_listing_optin_option_text_position == 'after') ? $mf_listing_optin_option_text :''); ?></span>
-			    </label>
-            </div>
-        </div>
+
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-optin-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<div class="mf-checkbox" id="mf-input-optin-<?php echo esc_attr($this->get_id()); ?>">
+				<div class="mf-checkbox-option">
+					<label>
+						<?php
+							if ( $mf_listing_optin_option_text_position == 'before' ):
+								echo str_replace('`', '\`', \MetForm\Utils\Util::kses( $mf_listing_optin_option_text ));
+							endif;
+						?>
+						<input
+							type="checkbox"
+							class="mf-input mf-checkbox-input <?php echo $class; ?>"
+							name="<?php echo esc_attr($mf_input_name); ?>" 
+							value="1"
+							<?php if ( !$is_edit_mode ): ?>
+								onInput=${ parent.handleOptin }
+								aria-invalid=${validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'true' : 'false'}
+								ref=${el => parent.activateValidation(<?php echo json_encode($configData); ?>, el)}
+							<?php endif; ?>
+							/>
+						<span>
+							<?php
+								if ( $mf_listing_optin_option_text_position == 'after' ):
+									echo str_replace('`', '\`', \MetForm\Utils\Util::kses( $mf_listing_optin_option_text ));
+								endif;
+							?>
+						</span>
+					</label>
+				</div>
+			</div>
+
+			<?php if ( !$is_edit_mode ): ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+			<?php echo '' != $mf_input_help_text ? '<span class="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
     
 }

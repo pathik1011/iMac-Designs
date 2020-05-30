@@ -271,11 +271,11 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                             </h2>
                                             <span class="mf-setting-dash-section-heading--subtitle"><?php esc_html_e('review', 'metform'); ?></span>
                                             <div class="mf-setting-dash-section-heading--content">
-                                                <p><?php esc_html_e('', 'metform') ?></p>
+                                                <p></p>
                                             </div>
                                         </div> <!-- ./End Section heading -->
                                         <div class="mf-admin-right-content--button">
-                                            <a target="_blank" href="https://wordpress.org/support/plugin/elementskit-lite/reviews/?rate=5#new-post" class="mf-admin-setting-btn fatty"><span class="mf mf-star-1"></span><?php esc_html_e('Rate it now', 'elementskit'); ?></a>
+                                            <a target="_blank" href="https://wordpress.org/support/plugin/metform/reviews/?rate=5#new-post" class="mf-admin-setting-btn fatty"><span class="mf mf-star-1"></span><?php esc_html_e('Rate it now', 'elementskit'); ?></a>
                                         </div>
                                     </div>
 
@@ -306,6 +306,8 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                     <a class="attr-nav-item attr-nav-link" data-toggle="tab" href="#mf-map-tab" role="tab" aria-controls="nav-profile" aria-selected="false"><?php esc_html_e('Map', 'metform'); ?></a>
                                                 </li>
                                             <?php endif; ?>
+
+                                            
                                         </ul>
                                     </div>
 
@@ -389,7 +391,13 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                 </div>
                                             </div>
                                         <?php endif; ?>
-                                    </div>
+
+                                        
+                                  
+                                  
+                                  
+                                  
+                                        </div>
 
 
                                 </div>
@@ -399,9 +407,10 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                         <!-- ./End General Tab -->
 
                         <!-- Payment Tab -->
+                        <?php if (class_exists('\MetForm_Pro\Core\Integrations\Payment\Paypal')) : ?>
                         <div class="mf-settings-section" id="mf-payment_options">
                             <div class="mf-settings-single-section">
-                                <?php if (class_exists('\MetForm_Pro\Core\Integrations\Payment\Paypal')) : ?>
+                                
                                     <div class="mf-setting-header">
                                         <h3 class="mf-settings-single-section--title"><span class="mf mf-settings"></span><?php esc_html_e('Payment', 'metform'); ?></h3>
                                         <button type="submit" name="submit" id="submit" class="mf-admin-setting-btn active"><span class="mf mf-icon-checked-fillpng"></span><?php esc_attr_e('Save Changes', 'metform'); ?></button>
@@ -418,6 +427,10 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                     <a class="attr-nav-item attr-nav-link" data-toggle="tab" href="#attr-stripe-tab" role="tab" aria-controls="nav-profile" aria-selected="false"><?php esc_html_e('Stripe', 'metform'); ?></a>
                                                 </li>
                                             <?php endif; ?>
+
+                                            <li>
+                                                <a class="attr-nav-item attr-nav-link" data-toggle="tab" href="#mf-thankyou-tab" role="tab"><?php esc_attr_e('Tankyou Page', 'metform'); ?></a>
+                                            </li>
                                         </ul>
                                     </div>
 
@@ -513,13 +526,47 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                     </div>
                                                 </div>
                                             <?php endif; ?>
+
+                                             <!-- Thank you page section -->
+
+                                         <div class="attr-tab-pane attr-fade" id="mf-thankyou-tab" role="tabpanel" aria-labelledby="nav-home-tab">
+                                                <div class="attr-row">
+                                                    <div class="attr-col-lg-6">
+                                                        <div class="mf-setting-input-group">
+                                                        <h3>Select Thankyou Page :</h3>
+                                                            <?php $page_ids = get_all_page_ids(); ?>
+                                                            <select name="mf_thank_you_page" class="mf-setting-input attr-form-control">
+                                                                <?php foreach ($page_ids as $page) : ?>
+                                                                    <option <?php 
+                                                                    if(isset($settings['mf_thank_you_page'])){
+                                                                        if ($settings['mf_thank_you_page'] == $page) {
+                                                                            echo 'selected';
+                                                                        } 
+                                                                        
+                                                                    }
+                                                                  
+                                                                                    ?> value="<?php echo $page; ?>"> <?php echo get_the_title($page); ?>
+                                                                    <?php endforeach; ?>
+                                                                  
+
+                                                            </select>
+                                                            <br><br>
+                                                            <p>Handle both payment successfull and  cancel redirection page. Learn more about Thank you page <a href="https://help.wpmet.com/docs/thank-you-page/" target="_blank">Here</a></p>
+                                                            <a class="mf-setting-btn-link" href="<?php echo get_admin_url() . 'post-new.php?post_type=page'; ?>">Create Thankyou Page</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                         </div>
                                         </div>
 
 
                                     </div>
-                                <?php endif; ?>
+                                
                             </div>
-                        </div>
+                            <?php endif; ?>
+                       
                         <!-- ./End Payment Tab -->
 
                         <!-- newsletter Integration Tab -->
@@ -573,24 +620,23 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <?php if (false) : ?>
-                                                        <div class="attr-col-lg-6">
-                                                            <div class="mf-setting-input-desc">
-                                                                <div class="mf-setting-input-desc-data">
-                                                                    <h2 class="mf-setting-input-desc--title">
-                                                                        <?php esc_html_e('How To', 'metfrom') ?></h2>
-                                                                    <p><?php esc_html_e('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.', 'metform') ?>
-                                                                    </p>
-                                                                    <ol>
-                                                                        <li><?php esc_html_e('Item 1', 'metform') ?></li>
-                                                                        <li><?php esc_html_e('Item 2', 'metform') ?></li>
-                                                                        <li><?php esc_html_e('Item 3', 'metform') ?></li>
-                                                                    </ol>
-                                                                </div>
-                                                                <a href="https://help.wpmet.com/docs-cat/metform/" class="mf-setting-btn-link" target="_blank"><?php esc_html_e('View Documentation', 'metform'); ?></a>
+
+                                                    <div class="attr-col-lg-6">
+                                                        <div class="mf-setting-input-desc">
+                                                            <div class="mf-setting-input-desc-data">
+                                                                <h2 class="mf-setting-input-desc--title">
+                                                                    <?php esc_html_e('How To', 'metfrom') ?></h2>
+                                                                <p><?php esc_html_e('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.', 'metform') ?>
+                                                                </p>
+                                                                <ol>
+                                                                    <li><?php esc_html_e('Item 1', 'metform') ?></li>
+                                                                    <li><?php esc_html_e('Item 2', 'metform') ?></li>
+                                                                    <li><?php esc_html_e('Item 3', 'metform') ?></li>
+                                                                </ol>
                                                             </div>
+                                                            <a href="https://help.wpmet.com/docs-cat/metform/" class="mf-setting-btn-link" target="_blank"><?php esc_html_e('View Documentation', 'metform'); ?></a>
                                                         </div>
-                                                    <?php endif; ?>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -613,6 +659,13 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                                 <input type="text" <?php echo $disabledAttr; ?> id="mf_aweber_dev_api_sec" name="mf_aweber_dev_api_sec" value="<?php echo esc_attr((isset($settings['mf_aweber_dev_api_sec'])) ? $settings['mf_aweber_dev_api_sec'] : ''); ?>" class="mf-setting-input mf-mailchimp-api-key attr-form-control" placeholder="<?php esc_html_e('Aweber developer secret key', 'metform'); ?>">
                                                                 <p class="description">
                                                                     <?php esc_html_e('Enter here your Aweber developer secret key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://labs.aweber.com/apps/'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
+                                                                </p>
+                                                            </div>
+
+                                                            <div class="mf-setting-input-group">
+                                                                <label for="attr-input-label" class="mf-setting-label mf-setting-label attr-input-label"><?php echo __('Redirect url:', 'metform'); ?></label>
+                                                                <p class="description">
+			                                                        <?php echo get_admin_url() . 'admin.php?page=metform-menu-settings'; ?>
                                                                 </p>
                                                             </div>
 
@@ -660,7 +713,7 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                                 <label for="attr-input-label" class="mf-setting-label mf-setting-label attr-input-label"><?php esc_html_e('API Key:', 'metform'); ?></label>
                                                                 <input type="text" name="mf_ckit_api_key" value="<?php echo esc_attr((isset($settings['mf_ckit_api_key'])) ? $settings['mf_ckit_api_key'] : ''); ?>" class="mf-setting-input mf-mailchimp-api-key attr-form-control" placeholder="<?php esc_html_e('ConvertKit api key', 'metform'); ?>">
                                                                 <p class="description">
-                                                                    <?php esc_html_e('Enter here your ConvertKit api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://admin.ckit.com/'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
+                                                                    <?php esc_html_e('Enter here your ConvertKit api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://app.convertkit.com/users/login'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
                                                                 </p>
                                                             </div>
 
@@ -669,7 +722,7 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                                 <label for="attr-input-label" class="mf-setting-label mf-setting-label attr-input-label"><?php esc_html_e('Secret Key:', 'metform'); ?></label>
                                                                 <input type="text" name="mf_ckit_sec_key" value="<?php echo esc_attr((isset($settings['mf_ckit_sec_key'])) ? $settings['mf_ckit_sec_key'] : ''); ?>" class="mf-setting-input mf-mailchimp-api-key attr-form-control" placeholder="<?php esc_html_e('ConvertKit api key', 'metform'); ?>">
                                                                 <p class="description">
-                                                                    <?php esc_html_e('Enter here your ConvertKit api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://admin.ckit.com/'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
+                                                                    <?php esc_html_e('Enter here your ConvertKit api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://app.convertkit.com/users/login'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
                                                                 </p>
                                                             </div>
 
@@ -700,11 +753,19 @@ $settings = \MetForm\Core\Admin\Base::instance()->get_settings_option();
                                                 <div class="attr-row">
                                                     <?php if (class_exists('\MetForm_Pro\Core\Integrations\Email\Activecampaign\Active_Campaign')) : ?>
                                                         <div class="attr-col-lg-6">
+                                                        <div class="mf-setting-input-group">
+                                                                <label for="attr-input-label" class="mf-setting-label mf-setting-label attr-input-label"><?php esc_html_e('API URL:', 'metform'); ?></label>
+                                                                <input type="text" name="mf_active_campaign_url" value="<?php echo esc_attr((isset($settings['mf_active_campaign_url'])) ? $settings['mf_active_campaign_url'] : ''); ?>" class="mf-setting-input mf-mailchimp-api-key attr-form-control" placeholder="<?php esc_html_e('ActiveCampaign API URL', 'metform'); ?>">
+                                                                <p class="description">
+                                                                    <?php esc_html_e('Enter here your ActiveCampaign api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://www.activecampaign.com/'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
+                                                                </p>
+                                                            </div>
+
                                                             <div class="mf-setting-input-group">
                                                                 <label for="attr-input-label" class="mf-setting-label mf-setting-label attr-input-label"><?php esc_html_e('API Key:', 'metform'); ?></label>
                                                                 <input type="text" name="mf_active_campaign_api_key" value="<?php echo esc_attr((isset($settings['mf_active_campaign_api_key'])) ? $settings['mf_active_campaign_api_key'] : ''); ?>" class="mf-setting-input mf-mailchimp-api-key attr-form-control" placeholder="<?php esc_html_e('ActiveCampaign api key', 'metform'); ?>">
                                                                 <p class="description">
-                                                                    <?php esc_html_e('Enter here your ActiveCampaign api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://admin.mailchimp.com/'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
+                                                                    <?php esc_html_e('Enter here your ActiveCampaign api key. ', 'metform'); ?><a target="__blank" class="mf-setting-btn-link" href="<?php echo esc_url('https://www.activecampaign.com/'); ?>"><?php esc_html_e('Get API.', 'metform'); ?></a>
                                                                 </p>
                                                             </div>
                                                         </div>

@@ -70,7 +70,14 @@ Class MetForm_Input_Switch extends Widget_Base{
 
 		$this->input_setting_controls();
 
-		
+		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
 
 		$this->end_controls_section();
 
@@ -276,27 +283,57 @@ Class MetForm_Input_Switch extends Widget_Base{
 		$settings = $this->get_settings_for_display();
         extract($settings);
 		
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
-
-		echo "<div class='mf-input-wrapper'>";
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 		
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-switch-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_attr(($mf_input_required === 'yes') ? '*' : '');?></span>
-			</label>
-			<?php
-		}
+		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+		];
+
+		$switch_text_enable = isset($mf_swtich_enable_text) ? esc_attr($mf_swtich_enable_text) : '';
+		$switch_text_disable = isset($mf_swtich_disable_text) ? esc_attr($mf_swtich_disable_text) : '';
         ?>
-		<span class="mf-input-switch-control mf-input-switch">
-            <input type="checkbox" name="<?php echo esc_attr($mf_input_name); ?>" value="1" class="mf-input mf-input-control mf-input-switch-box <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-switch-<?php echo esc_attr($this->get_id()); ?>">
-            <label data-enable="<?php echo isset($mf_swtich_enable_text) ? esc_attr($mf_swtich_enable_text) : ''; ?>" data-disable="<?php echo isset($mf_swtich_disable_text) ? esc_attr($mf_swtich_disable_text) : '' ?>" class="mf-input-control-label" for="mf-input-switch-<?php echo esc_attr($this->get_id()); ?>"></label>
-		</span>
+
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-switch-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<span class="mf-input-switch-control mf-input-switch">
+				<input type="checkbox"
+					name="<?php echo esc_attr($mf_input_name); ?>"
+					value="<?php echo isset($mf_swtich_disable_text) ? esc_attr($mf_swtich_disable_text) : '' ?>"
+					class="mf-input mf-input-control mf-input-switch-box <?php echo $class; ?>" id="mf-input-switch-<?php echo esc_attr($this->get_id()); ?>"
+					<?php if ( !$is_edit_mode ): ?>
+						onInput=${ parent.handleSwitch }
+						aria-invalid=${validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'true' : 'false'}
+						ref=${el => parent.activateValidation(<?php echo json_encode($configData); ?>, el)}
+					<?php endif; ?>
+					/>
+				<label
+					data-enable="<?php echo apply_filters( 'metform_option_text', esc_html($switch_text_enable), $render_on_editor ); ?>"
+					data-disable="<?php echo apply_filters( 'metform_option_text', esc_html($switch_text_disable), $render_on_editor ); ?>"
+					class="mf-input-control-label" for="mf-input-switch-<?php echo esc_attr($this->get_id()); ?>"></label>
+			</span>
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+			
+			<?php echo '' != $mf_input_help_text ? '<span class="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
+
     }
     
 }

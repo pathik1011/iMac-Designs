@@ -43,7 +43,7 @@ Class MetForm_Input_Multi_Select extends Widget_Base{
         $input_fields = new Repeater();
 
         $input_fields->add_control(
-            'mf_input_option_text', [
+            'label', [
                 'label' => esc_html__( 'Input Field Text', 'metform' ),
                 'type' => Controls_Manager::TEXT,
                 'default' => esc_html__( 'Input Text' , 'metform' ),
@@ -52,7 +52,7 @@ Class MetForm_Input_Multi_Select extends Widget_Base{
             ]
         );
         $input_fields->add_control(
-            'mf_input_option_value', [
+            'value', [
                 'label' => esc_html__( 'Input Field Value', 'metform' ),
                 'type' => Controls_Manager::TEXT,
                 'default' => esc_html__( 'Input Value' , 'metform' ),
@@ -93,21 +93,21 @@ Class MetForm_Input_Multi_Select extends Widget_Base{
                 'label' => esc_html__( 'Multi Select List', 'metform' ),
                 'type' => Controls_Manager::REPEATER,
                 'fields' => $input_fields->get_controls(),
-                'title_field' => '{{{ mf_input_option_text }}}',
+                'title_field' => '{{{ label }}}',
                 'default' => [
                     [
-                        'mf_input_option_text' => 'Item 1',
-                        'mf_input_option_value' => 'value-1',
+                        'label' => 'Item 1',
+                        'value' => 'value-1',
                         'mf_input_option_status' => '',
                     ],
                     [
-                        'mf_input_option_text' => 'Item 2',
-                        'mf_input_option_value' => 'value-2',
+                        'label' => 'Item 2',
+                        'value' => 'value-2',
                         'mf_input_option_status' => '',
                     ],
                     [
-                        'mf_input_option_text' => 'Item 3',
-                        'mf_input_option_value' => 'value-3',
+                        'label' => 'Item 3',
+                        'value' => 'value-3',
                         'mf_input_option_status' => '',
                     ],
                 ],
@@ -126,6 +126,15 @@ Class MetForm_Input_Multi_Select extends Widget_Base{
 		);
 
 		$this->input_setting_controls();
+
+        $this->add_control(
+            'mf_input_validation_type',
+            [
+                'label' => __( 'Validation Type', 'metform' ),
+                'type' => \Elementor\Controls_Manager::HIDDEN,
+                'default' => 'none',
+            ]
+        );
 
         $this->end_controls_section();
 
@@ -179,44 +188,86 @@ Class MetForm_Input_Multi_Select extends Widget_Base{
 	}
 
     protected function render($instance = []){
-		$settings = $this->get_settings_for_display();
+        $settings = $this->get_settings_for_display();
+        $inputWrapStart = $inputWrapEnd = '';
         extract($settings);
+
+		$render_on_editor = true;
+        $is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
         
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+        $class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+        
+        $configData = [
+            'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+            'minLength'		=> isset($mf_input_min_length) ? $mf_input_min_length : 1,
+            'maxLength'		=> isset($mf_input_max_length) ? $mf_input_max_length : '',
+            'type'			=> isset($mf_input_validation_type) ? $mf_input_validation_type : '',
+            'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+        ];
 
-		echo "<div class='mf-input-wrapper'>";
-		
-		if($mf_input_label_status == 'yes'){
-			?>
-            <label class="mf-input-label" for="mf-input-multi-select-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-                <span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-            </label>
-			<?php
-		}
-        ?>
-        <select class="mf-input mf-input-multiselect <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-multi-select-<?php echo esc_attr($this->get_id()); ?>" 
-            name="<?php echo esc_attr($mf_input_name); ?>[]" 
-            multiple="multiple"
-        >
-            <?php
-            foreach($mf_input_list as $value){
-                ?>
-                <option value="<?php echo esc_attr($value['mf_input_option_value']); ?>"
-                <?php echo esc_attr($value['mf_input_option_status']); ?>
-                <?php echo esc_attr($value['mf_input_option_selected']); ?>
-                >
-                    <?php echo esc_html($value['mf_input_option_text']); ?>
-                </option>
-                <?php
+        $mf_default_input_list = isset($mf_input_list) ? array_values(array_filter($mf_input_list, function($item){
+            if(isset($item['mf_input_option_selected']) && !empty($item['mf_input_option_selected'])){
+                return true;
             }
-            ?>
-        </select>
+            return false;
+        })) : array();
 
-		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
+        ?>
+
+        <?php echo $inputWrapStart; ?>
+
+		<div className="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label className="mf-input-label" htmlFor="mf-input-multi-select-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span className="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+            <${props.Select}
+                isOptionDisabled=${option => option.mf_input_option_status === 'disabled'}
+                className=${"mf-input mf-input-multiselect <?php echo $class; ?> " + ( validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'mf-invalid' : '' )}
+                classNamePrefix="mf_multiselect"
+                value=${parent.getValue("<?php echo esc_attr($mf_input_name); ?>") ? <?php echo json_encode($mf_input_list); ?>.filter(item => {
+                    if(parent.state.formData['<?php echo esc_attr($mf_input_name); ?>'] && parent.state.formData['<?php echo esc_attr($mf_input_name); ?>'].indexOf(item.value) != -1 ){
+                        return item;
+                    }
+                }) :  <?php echo json_encode( $mf_default_input_list ); ?>}
+                name='<?php echo esc_attr($mf_input_name); ?>'
+                options=${<?php echo json_encode($mf_input_list); ?>}
+                onChange=${(el) => {
+                    setValue("<?php echo esc_attr($mf_input_name); ?>", '');
+                    if(el != null){
+                        setValue("<?php echo esc_attr($mf_input_name); ?>", el, true);
+                    }
+                    parent.multiSelectChange(el, '<?php echo esc_attr($mf_input_name); ?>');
+                }}
+                isMulti
+                />
+            
+            ${register({ name: "<?php echo esc_attr($mf_input_name); ?>" }, parent.activateValidation(<?php echo json_encode($configData); ?>))}
+
+            <?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+            <?php echo '' != $mf_input_help_text ? '<span className="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
+		<?php echo $inputWrapEnd; ?>
+
+        <?php
     }
     
 }

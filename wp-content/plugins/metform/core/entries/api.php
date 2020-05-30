@@ -18,6 +18,13 @@ class Api extends \MetForm\Base\Api
 
     public function post_insert()
     {
+        /**
+         * Get page id
+         */
+
+        $url = wp_get_referer();
+        $post_id = url_to_postid($url);
+        $post_id;
 
         $id = $this->request['id'];
 
@@ -25,7 +32,7 @@ class Api extends \MetForm\Base\Api
 
         $file_data = $this->request->get_file_params();
 
-        return Action::instance()->submit($id, $form_data, $file_data);
+        return Action::instance()->submit($id, $form_data, $file_data,$post_id);
     }
 
     public function get_export()
@@ -127,7 +134,6 @@ class Api extends \MetForm\Base\Api
     public function get_test()
     {
 
- 
     }
 
 }

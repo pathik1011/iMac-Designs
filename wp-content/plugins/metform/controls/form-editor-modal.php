@@ -12,6 +12,7 @@
 						<span class="elementor-templates-modal__header__logo__title"><?php esc_html_e('MetForm', 'metform'); ?></span>
 					</div>
 					<a class="metform-form-edit-btn" href="#"><i class="eicon-cog"></i><?php esc_html_e('Form settings', 'metform') ?></a>
+					<a class="metform-form-update-close-btn" href="#"><?php esc_html_e('Update & Close', 'metform') ?></a>
 				</div>
 
 				<div class="elementor-templates-modal__header__items-area">

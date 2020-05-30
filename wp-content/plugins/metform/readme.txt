@@ -3,7 +3,7 @@ Contributors: ataurr, wpmet, emrnco, prappo_p, atiqsu, easin55474
 Tags: Form builder, Elementor form builder, contact form, custom form, forms,  drag & drop form builder
 Requires at least: 4.8
 Tested up to: 5.4
-Stable tag: 1.2.3
+Stable tag: 1.3.0
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -221,6 +221,54 @@ Connect with Gmail, Slack, Mailchimp, and many more.
 
 
 == Changelog ==
+Version 1.3.0
+New: Localization Option for Date Field
+New: added calculation numberFormat() function
+Fix: HTML Entites for File Upload
+Fix: active campaign error fixed
+Fix: improved calculation
+fix: Multistep pressing enter to change the step fix
+fix: stripe payment issue fixed
+
+Version 1.3.0-beta6
+Fix: mobile datepicker issues fixed
+Fix: next and prev issues fixed on multistep
+Fix: multistep tab title issue fixed
+
+Version 1.3.0-beta5
+Added: Spinner animation for Submit Button when submitting
+Added: Disable state for Submit Button to prevent multiple form submission
+Fix: admin settings page fixed
+Fix: Submit Button causes JS error after empty form submited
+Fix: Integration Settings causes JS error after updated
+
+Version 1.3.0-beta4
+New: Responsive Width control for Submit Button
+Fix: form settings issues
+Fix: HTML entities support for Input Label, Placeholder and Help Text
+
+Version 1.3.0-beta3
+New: Option('Stop Vertical Scrolling') added for enabling or disabling vertical scrolling when form submit
+New: Form submitting failed notification added
+Tweak: Improved demo proviews 
+Fix: Improved design on form settings
+Fix: Multistep broken issues
+Fix: Form inline style issues
+Fix: 'Select' widget placeholder added
+Fix: Fixed 'date' and 'time' disappearing issues on multistep
+Fix: Form redirection issue has been fixed
+Fix: 'Hide Form After Submission' issue has been fixed
+
+Version 1.3.0-beta2
+Added New pot file for translation
+remove: 'Response message' widget has been removed
+New: Added Response message at the top of the form by default
+
+Version 1.3.0-beta1
+New: All form widgets are supported by ReactJS
+Huge optimization
+""Metform 1.3.0-beta1 is a major update. We have reconstructed the widgets with react and huge optimization for future proof. If you faced any issue please contact our support team from here https://help.wpmet.com/""
+
 Version v1.2.3
 New: .pot file added
 New: forms can be now exported & imported using elementor's json files.
@@ -304,8 +352,7 @@ Added widget area to edit save use from same page.
 
 
 == Upgrade Notice ==
-
-
+Metform 1.3.0-beta1 is a major update. We have reconstructed the widgets with react and huge optimization for future proof. If you faced any issue please contact our support team from here https://help.wpmet.com/
 
 == Installation ==
 
@@ -324,4 +371,3 @@ eg.  This plugin requires an elementor builder.
 
 Coming soon...
 But you can see this video https://www.youtube.com/watch?v=rvawKRgLC14
-

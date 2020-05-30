@@ -10,7 +10,32 @@ Class Hooks{
     add_action( 'admin_init', [ $this, 'add_author_support' ], 10 );
     add_filter( 'manage_metform-form_posts_columns', [ $this, 'set_columns' ] );
     add_action( 'manage_metform-form_posts_custom_column', [ $this, 'render_column' ], 10, 2 );
+
+    // Metform Placehold, Label and Help Text
+		add_filter( 'metform_label_text', [$this, 'metform_text_entity_support'], 10, 2 );
+		add_filter( 'metform_placeholder', [$this, 'metform_text_entity_support'], 10, 2 );
+		add_filter( 'metform_help_text', [$this, 'metform_text_entity_support'], 10, 2 );
+		add_filter( 'metform_button_text', [$this, 'metform_text_entity_support'], 10, 2 );
+		add_filter( 'metform_option_text', [$this, 'metform_text_entity_support'], 10, 2 );
   }
+
+	/**
+	 * Metform Placehold, Label and Help Text
+	 *
+	 * Modify the placeholder, label and Help text
+	 *
+	 * Fired by `metform_label_text`, 'metform_placeholder', 'metform_help_text' action.
+	 *
+	 * @since 1.3.0-beta3
+	 * @access public
+	 */
+	public function metform_text_entity_support($str, $render_on_editor) {
+		if ( !\Elementor\Plugin::$instance->editor->is_edit_mode() || $render_on_editor ):
+      $str = '${ parent.decodeEntities("'. $str .'") } ';
+		endif;
+		
+		return $str;
+	}
 
   public function get_form_content_on_preview($content) {
 

@@ -51,6 +51,15 @@ Class MetForm_Input_Rating extends Widget_Base{
 		);
 
         $this->input_setting_controls();
+
+        $this->add_control(
+            'mf_input_validation_type',
+            [
+                'label' => __( 'Validation Type', 'metform' ),
+                'type' => \Elementor\Controls_Manager::HIDDEN,
+                'default' => 'none',
+            ]
+        );
         
         $this->add_control(
             'mf_input_rating_number',
@@ -60,7 +69,7 @@ Class MetForm_Input_Rating extends Widget_Base{
                 'min' => 2,
                 'max' => 10,
                 'step' => 1,
-                'default' => 3,
+                'default' => 5,
             ]
         );
 
@@ -100,10 +109,7 @@ Class MetForm_Input_Rating extends Widget_Base{
 				'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .mf-input' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .mf-input-rating' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .mf-input-wrapper .select2-container--default .select2-selection--single, {{WRAPPER}} .select2-container--default .select2-search--dropdown .select2-search__field, {{WRAPPER}} .mf-input-wrapper ul.select2-results__options .select2-results__option' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .mf-input-wrapper .select2-container .select2-selection--multiple .select2-selection__rendered, {{WRAPPER}} .mf-input-wrapper .range-slider' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important',
+					'{{WRAPPER}} .mf-ratings > label' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important',
 				],
 			]
         );
@@ -115,12 +121,16 @@ Class MetForm_Input_Rating extends Widget_Base{
 				'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .mf-input' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .mf-input-rating' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .mf-input-wrapper .select2-container--default .select2-selection--single, {{WRAPPER}} .select2-container--open .select2-dropdown--below' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-					'{{WRAPPER}} .mf-input-wrapper .select2-container .select2-selection--multiple .select2-selection__rendered, {{WRAPPER}} .mf-input-wrapper .range-slider' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};'
+					'{{WRAPPER}} .mf-ratings > label' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};'
 				],
 			]
+        );
+        
+        $this->add_control(
+            'hr_1',
+            [
+                'type' => Controls_Manager::DIVIDER,
+            ]
         );
         
         $this->start_controls_tabs( 'mf_input_tabs_style' );
@@ -142,9 +152,9 @@ Class MetForm_Input_Rating extends Widget_Base{
                     'value' => Scheme_Color::COLOR_1,
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .mf-input-rating .star .mf-star' => 'color: {{VALUE}}',
+                    '{{WRAPPER}} .mf-ratings:not(.is-selected), {{WRAPPER}} .mf-ratings.is-selected:not(:hover) > input:checked + label ~ label, {{WRAPPER}} .mf-ratings.is-selected > label:hover ~ label, {{WRAPPER}} .mf-ratings:not(.is-selected) > label:hover ~ label' => 'color: {{VALUE}}',
                 ],
-                'default' => '#CCCCCC',
+                'default' => '#ccc',
             ]
         );
 
@@ -153,51 +163,16 @@ Class MetForm_Input_Rating extends Widget_Base{
             [
                 'name' => 'mf_input_border',
                 'label' => esc_html__( 'Border', 'metform' ),
-                'selector' => '{{WRAPPER}} .mf-input-rating .star',
+                'selector' => '{{WRAPPER}} .mf-ratings:not(.is-selected) > label, {{WRAPPER}} .mf-ratings.is-selected:not(:hover) > input:checked + label ~ label, {{WRAPPER}} .mf-ratings.is-selected > label:hover ~ label, {{WRAPPER}} .mf-ratings:not(.is-selected) > label:hover ~ label',
             ]
         );
-
-        $this->end_controls_tab();
-
-        $this->start_controls_tab(
-            'mf_input_tabhover',
-            [
-                'label' =>esc_html__( 'Hover', 'metform' ),
-            ]
-        );
-
-        $this->add_control(
-            'mf_input_color_hover',
-            [
-                'label' => esc_html__( 'Input Color', 'metform' ),
-                'type' => Controls_Manager::COLOR,
-                'scheme' => [
-                    'type' => Scheme_Color::get_type(),
-                    'value' => Scheme_Color::COLOR_1,
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .mf-input-rating .star.hover i.mf-star' => 'color: {{VALUE}}',
-                ],
-                'default' => '#ffdb72',
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Border::get_type(),
-            [
-                'name' => 'mf_input_border_hover',
-                'label' => esc_html__( 'Border', 'metform' ),
-                'selector' => '{{WRAPPER}} .mf-input-rating .star.hover',
-            ]
-        );
-
 
         $this->end_controls_tab();
 
         $this->start_controls_tab(
             'mf_input_tabfocus',
             [
-                'label' =>esc_html__( 'Focus', 'metform' ),
+                'label' =>esc_html__( 'Active', 'metform' ),
             ]
         );
 
@@ -211,7 +186,7 @@ Class MetForm_Input_Rating extends Widget_Base{
                     'value' => Scheme_Color::COLOR_1,
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .mf-input-rating .star.selected i.mf-star' => 'color: {{VALUE}}',
+                    '{{WRAPPER}} .mf-ratings.is-selected > label, {{WRAPPER}} .mf-ratings:not(.is-selected):hover > label' => 'color: {{VALUE}}',
                 ],
                 'default' => '#ffdb72',
             ]
@@ -222,7 +197,7 @@ Class MetForm_Input_Rating extends Widget_Base{
             [
                 'name' => 'mf_input_border_focus',
                 'label' => esc_html__( 'Border', 'metform' ),
-                'selector' => '{{WRAPPER}} .mf-input-rating .star.selected',
+                'selector' => '{{WRAPPER}} .mf-ratings.is-selected > label, {{WRAPPER}} .mf-ratings:not(.is-selected):hover > label',
             ]
         );
 
@@ -230,16 +205,6 @@ Class MetForm_Input_Rating extends Widget_Base{
         $this->end_controls_tab();
 
         $this->end_controls_tabs();
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name' => 'mf_input_typgraphy',
-                'label' => esc_html__( 'Typography', 'metform' ),
-                'scheme' => Scheme_Typography::TYPOGRAPHY_1,
-                'selector' => '{{WRAPPER}} ..mf-input-rating .star',
-            ]
-        );
 		
 		$this->add_responsive_control(
 			'mf_input_border_radius',
@@ -263,20 +228,38 @@ Class MetForm_Input_Rating extends Widget_Base{
 					'size' => 0,
 				],
 				'selectors' => [
-					'{{WRAPPER}} .mf-input-rating' => 'border-radius: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .mf-ratings > label' => 'border-radius: {{SIZE}}{{UNIT}};',
 				],
 				'condition'    => [
                     'mf_input_border_border!' => '',
                 ],
 			]
-		);
+        );
+        
+        $this->add_control(
+            'hr_2',
+            [
+                'type' => Controls_Manager::DIVIDER,
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name' => 'mf_input_typgraphy',
+                'label' => esc_html__( 'Typography', 'metform' ),
+                'scheme' => Scheme_Typography::TYPOGRAPHY_1,
+                'selector' => '{{WRAPPER}} .mf-ratings > label:before',
+                'exclude' => [ 'font_family', 'font_weight', 'text_transform', 'text_decoration' ],
+            ]
+        );
 
 		$this->add_group_control(
 			Group_Control_Box_Shadow::get_type(),
 			[
 				'name' => 'mf_input_box_shadow',
 				'label' => esc_html__( 'Box Shadow', 'metform' ),
-				'selector' => '{{WRAPPER}} .mf-input-rating',
+				'selector' => '{{WRAPPER}} .mf-ratings',
 			]
 		);
 
@@ -303,36 +286,63 @@ Class MetForm_Input_Rating extends Widget_Base{
     protected function render($instance = []){
 		$settings = $this->get_settings_for_display();
 		extract($settings);
-		
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
-
-		echo "<div class='mf-input-wrapper'>";
-
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-rating"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-			</label>
-			<?php
-		}
-        ?>
-        <ul class=" mf-input-rating">
-            <?php for($i = 1; $i <= $mf_input_rating_number; $i++ ):?>
-                <li class="star-li star  <?php if($i == 1){echo 'selected';}?>" data-value="<?php echo esc_attr($i);?>">
-                <i class="mf-star dashicons-before dashicons-star-filled"></i>
-                </li>
-                <?php endfor;?>
-        </ul>
-
-        <input type="hidden" class="mf-input mf-input-hidden <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-<?php echo esc_attr($this->get_id()); ?>"
-          name="<?php echo esc_attr($mf_input_name); ?>" value="1"
-        />
         
+		$render_on_editor = false;
+        $is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+		
+        $class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+
+        $configData = [
+            'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+            'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+        ];
+
+        $isSelected = !$is_edit_mode ? '${ parent.getValue("'. $mf_input_name .'") ? "is-selected" : "" }' : '';
+        ?>
+
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-rating-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+            <div class="mf-ratings <?php echo $isSelected; ?>">
+                <?php
+                    for( $i = 1; $i <= $mf_input_rating_number; $i++ ):
+                        // $defaultChecked = 1 === $i ? ($is_edit_mode ? 'checked' : 'defaultChecked') : '';
+                        $input_id = 'mf-rating-' . $this->get_id() .'-'. $i;
+                    ?>
+                        <input
+                            type="radio"
+                            name="<?php echo esc_attr( $mf_input_name ); ?>"
+                            value="<?php echo esc_attr( $i ); ?>"
+                            id="<?php echo esc_attr( $input_id ); ?>"
+                            <?php if ( !$is_edit_mode ): ?>
+                                onChange=${parent.handleChange}
+                                aria-invalid=${validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'true' : 'false'}
+                                ref=${ el => parent.activateValidation(<?php echo json_encode($configData); ?>, el) }
+                                checked=${'<?php echo esc_attr( $i ); ?>' === parent.getValue('<?php echo esc_attr( $mf_input_name ); ?>')}
+                            <?php endif; ?>
+                            />
+                        <label for="<?php echo esc_attr( $input_id ); ?>"
+                            class="fa fa-star"></label>
+                    <?php
+                    endfor;
+                ?>
+            </div>
+
+            <?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+            <?php endif; ?>
+            
+            <?php echo '' != $mf_input_help_text ? '<span class="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
-    
 }

@@ -7,10 +7,11 @@ Class MetForm_Input_Radio extends Widget_Base{
 	use \MetForm\Traits\Common_Controls;
 	use \MetForm\Traits\Conditional_Controls;
 	use \MetForm\Widgets\Widget_Notice;
-
-	public function __construct( $data = [], $args = null ) {
+    
+    public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
-		if(class_exists('\Elementor\Icons_Manager') && method_exists('\Elementor\Icons_Manager', 'enqueue_shim')){
+
+		if ( class_exists('\Elementor\Icons_Manager') && method_exists('\Elementor\Icons_Manager', 'enqueue_shim') ) {
 			\Elementor\Icons_Manager::enqueue_shim();
 		}
 	}
@@ -69,7 +70,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 					'inline-block' => esc_html__( 'Left', 'metform' ),
                 ],
                 'selectors' => [
-					'{{WRAPPER}} .mf-radio-label' => 'display: {{VALUE}}; vertical-align: top',
+					'{{WRAPPER}} .mf-input-label' => 'display: {{VALUE}}; vertical-align: top',
 					'{{WRAPPER}} .mf-radio' => 'display: inline-block',
 				],
 				'condition'    => [
@@ -101,6 +102,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 				'default' => $this->get_name(),
 				'title' => esc_html__( 'Enter here name of the input', 'metform' ),
 				'description' => esc_html__('Name is must required. Enter name without space or any special character. use only underscore/ hyphen (_/-) for multiple word.', 'metform'),
+				'frontend_available'	=> true
 			]
 		);
 
@@ -220,6 +222,15 @@ Class MetForm_Input_Radio extends Widget_Base{
 
 		$this->input_setting_controls();
 
+		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
+
 		$this->end_controls_section();
 
 		if(class_exists('\MetForm_Pro\Base\Package')){
@@ -247,7 +258,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 					'value' => Scheme_Color::COLOR_1,
 				],
 				'selectors' => [
-					'{{WRAPPER}} .mf-radio-label' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .mf-input-label' => 'color: {{VALUE}}',
 				],
 				'default' => '#000000',
 				'condition'    => [
@@ -261,7 +272,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 				'name' => 'mf_input_label_typography',
 				'label' => esc_html__( 'Typography', 'metform' ),
 				'scheme' => Scheme_Typography::TYPOGRAPHY_1,
-				'selector' => '{{WRAPPER}} .mf-radio-label',
+				'selector' => '{{WRAPPER}} .mf-input-label',
 				'condition'    => [
                     'mf_input_label_status' => 'yes',
                 ],
@@ -274,7 +285,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 				'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .mf-radio-label' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .mf-input-label' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 				'condition'    => [
                     'mf_input_label_status' => 'yes',
@@ -288,7 +299,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 				'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .mf-radio-label' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .mf-input-label' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 				'condition'    => [
                     'mf_input_label_status' => 'yes',
@@ -301,7 +312,7 @@ Class MetForm_Input_Radio extends Widget_Base{
 			[
 				'name' => 'mf_input_label_box_shadow',
 				'label' => esc_html__( 'Box Shadow', 'metform' ),
-				'selector' => '{{WRAPPER}} .mf-radio-label',
+				'selector' => '{{WRAPPER}} .mf-input-label',
 				'condition'    => [
                     'mf_input_label_status' => 'yes',
                 ],
@@ -311,19 +322,19 @@ Class MetForm_Input_Radio extends Widget_Base{
 		$this->add_control(
 			'mf_input_required_indicator_color',
 			[
-				'label' => esc_html__( 'Required indicator color:', 'metform' ),
+				'label' => esc_html__( 'Required Indicator Color:', 'metform' ),
 				'type' => Controls_Manager::COLOR,
 				'scheme' => [
 					'type' => Scheme_Color::get_type(),
 					'value' => Scheme_Color::COLOR_1,
 				],
-				'default' => '#FF0000',
+				'default' => '#f00',
 				'selectors' => [
-					'{{WRAPPER}} .mf-input-label .mf-input-required-indicator, {{WRAPPER}} .mf-input-wrapper.mf-field-error .mf-radio-option,  {{WRAPPER}} .mf-input-wrapper .error' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .mf-input-required-indicator, {{WRAPPER}} .mf-error-message' => 'color: {{VALUE}}',
 				],
-				// 'condition'    => [
-                //     'mf_input_required' => 'yes',
-                // ],
+				'condition'    => [
+                    'mf_input_required' => 'yes',
+                ],
 			]
 		);
 
@@ -551,40 +562,76 @@ Class MetForm_Input_Radio extends Widget_Base{
 		$settings = $this->get_settings_for_display();
         extract($settings);
 
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 
-		echo "<div class='mf-input-wrapper'>";
+		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
 		
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-radio-label mf-input-label" for="mf-input-radio-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-			</label>
-			<?php
-		}
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+		];
 		?>
-		<div class="mf-radio" id="mf-input-radio-<?php echo esc_attr($this->get_id()); ?>">
-            <?php
-            foreach($mf_input_list as $option){
-                ?>
-                <div class="mf-radio-option <?php echo esc_attr($option['mf_input_option_status']); ?>">
-					<label><?php echo esc_html(($mf_input_option_text_position == 'before') ? $option['mf_input_option_text']:''); ?>
-						<input type="radio" class="mf-input mf-radio-input <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" name="<?php echo esc_attr($mf_input_name); ?>" 
-						value="<?php echo esc_attr($option['mf_input_option_value']); ?>" 
-						<?php echo esc_attr($option['mf_input_option_status']); ?>
-						>
-						<span><?php echo esc_html(($mf_input_option_text_position == 'after') ? $option['mf_input_option_text']:''); ?></span>
-					</label>
-                </div>
-                <?php
-            }
-            ?>
-        </div>
+
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-radio-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<div class="mf-radio" id="mf-input-radio-<?php echo esc_attr($this->get_id()); ?>">
+				<?php
+				foreach($mf_input_list as $option) {
+					$value = $option['mf_input_option_value'];
+					?>
+					<div class="mf-radio-option <?php echo esc_attr($option['mf_input_option_status']); ?>">
+						<label>
+							<?php
+								if ( $mf_input_option_text_position == 'before' ):
+									echo apply_filters( 'metform_option_text', esc_html( $option['mf_input_option_text'] ), $render_on_editor );
+								endif;
+							?>
+							<input
+								type="radio"
+								class="mf-input mf-radio-input <?php echo $class; ?>"
+								name="<?php echo esc_attr($mf_input_name); ?>"
+								value="<?php echo esc_attr($option['mf_input_option_value']); ?>"
+								<?php echo esc_attr($option['mf_input_option_status']); ?>
+								<?php if ( !$is_edit_mode ): ?>
+									onChange=${parent.handleChange}
+									aria-invalid=${validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'true' : 'false'}
+									ref=${el => parent.activateValidation(<?php echo json_encode($configData); ?>, el)}
+									checked=${'<?php echo esc_attr( $value ); ?>' === parent.getValue('<?php echo esc_attr( $mf_input_name ); ?>')}
+								<?php endif; ?>
+								/>
+							<span>
+								<?php
+									if ( $mf_input_option_text_position == 'after' ):
+										echo apply_filters( 'metform_option_text', esc_html( $option['mf_input_option_text'] ), $render_on_editor );
+									endif;
+								?>
+							</span>
+						</label>
+					</div>
+					<?php
+				}
+				?>
+			</div>
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+			<?php echo '' != $mf_input_help_text ? '<span class="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
+
     }
     
 }

@@ -45,7 +45,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('This is the form title', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Success Message:', 'metform');?></label>
@@ -55,7 +55,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('This mesage will be shown after a successful submission.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
                                     <input type="checkbox" value="1" name="require_login"
@@ -65,7 +65,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Without login, users can\'t submit the form.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
                                     <input type="checkbox" value="1" name="capture_user_browser_data"
@@ -75,7 +75,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Store user\'s browser data (ip, browser name, etc)', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
                                     <input type="checkbox" value="1" name="hide_form_after_submission"
@@ -85,7 +85,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('After submission, hide the form for preventing multiple submission.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
                                     <input type="checkbox" value="1" name="store_entries"
@@ -95,7 +95,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Save submitted form data to database.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-entry-title">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Entry Title', 'metform');?></label>
@@ -104,7 +104,7 @@
                                 <span
                                     class="mf-input-help"><?php esc_html_e('Enter here title of this form entries.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <div class="mf-input-group-inner">
                                     <label class="attr-input-label">
@@ -120,7 +120,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Limit the total number of submissions for this form.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
                                     <input type="checkbox" value="1" name="count_views"
@@ -129,7 +129,17 @@
                                 </label>
                                 <span class='mf-input-help'><?php esc_html_e('Track form views.', 'metform');?></span>
                             </div>
-                            <br>
+
+                            <div class="mf-input-group">
+                                <label class="attr-input-label">
+                                    <input type="checkbox" value="1" name="mf_stop_vertical_scrolling"
+                                        class="mf-admin-control-input mf-form-modalinput-stop_vertical_scrolling">
+                                    <span><?php esc_html_e('Stop Vertical Scrolling:', 'metform');?></span>
+                                </label>
+                                <span
+                                    class='mf-input-help'><?php esc_html_e('Stop scrolling effect when submitting the form.', 'metform');?></span>
+                            </div>
+                            
                             <div class="mf-input-group">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Redirect To:', 'metform');?></label>
@@ -139,7 +149,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Users will be redirected to the this link after submission.', 'metform');?></span>
                             </div>
-                            <br>
+                            
 
                         </div>
 
@@ -157,7 +167,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Want to send a submission copy to user by email? Active this one.', 'metform');?><strong><?php esc_html_e('The form must have at least one Email widget and it should be required.', 'metform');?></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-user-confirmation">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email Subject:', 'metform');?></label>
@@ -167,7 +177,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter here email subject.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-user-confirmation">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email From:', 'metform');?></label>
@@ -177,7 +187,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter the email by which you want to send email to user.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-user-confirmation">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email Reply To:', 'metform');?></label>
@@ -187,7 +197,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter email where user can reply/ you want to get reply.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-user-confirmation">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Thank you message :', 'metform');?></label>
@@ -197,7 +207,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter here your message to include it in email body. Which will be send to user.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <!-- <div class="mf-input-group">
 								<label for="attr-input-label" class="attr-input-label"><?php esc_html_e('Email Attached Submission Copy:', 'metform');?></label>
 								<input type="checkbox" value="1" name="user_email_attach_submission_copy" class="mf-admin-control-input mf-form-user-submission-copy">
@@ -219,7 +229,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Want to send a submission copy to admin by email? Active this one.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-admin-notification">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email Subject:', 'metform');?></label>
@@ -229,7 +239,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter here email subject.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-admin-notification">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email To:', 'metform');?></label>
@@ -239,7 +249,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter admin email where you want to send mail.', 'metform');?><strong><?php esc_html_e(' for multiple email addresses please use "," separator.', 'metform');?></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-admin-notification">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email From:', 'metform');?></label>
@@ -249,7 +259,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter the email by which you want to send email to admin.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-admin-notification">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Email Reply To:', 'metform');?></label>
@@ -259,7 +269,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter email where admin can reply/ you want to get reply.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-form-admin-notification">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Admin Note : ', 'metform');?></label>
@@ -286,9 +296,9 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Send entry data to third party api/webhook', 'metform');?></span>
                             </div>
-                            <br>
-                            <div class="mf-input-rest-api-group">
-                                <div class="mf-input-group mf-rest-api">
+                            
+                            <div class="mf-input-group mf-input-rest-api-group">
+                                <div class="mf-rest-api">
                                     <label for="attr-input-label"
                                         class="attr-input-label"><?php esc_html_e('URL/Webhook:', 'metform');?></label>
                                     <input type="text" name="mf_rest_api_url" class="mf-rest-api-url attr-form-control"
@@ -296,8 +306,8 @@
                                     <span
                                         class='mf-input-help'><?php esc_html_e('Enter rest api url/webhook here.', 'metform');?></span>
                                 </div>
-                                <div class="mf-input-group mf-rest-api-key">
-                                    <div class="mf-input-group" id='rest_api_method'>
+                                <div class="mf-rest-api-key">
+                                    <div id='rest_api_method'>
                                         <select name="mf_rest_api_method" class="mf-rest-api-method attr-form-control">
                                             <option value="POST"><?php esc_html_e('POST', 'metform');?></option>
                                             <option value="GET"><?php esc_html_e('GET', 'metform');?></option>
@@ -306,7 +316,7 @@
                                 </div>
 
                             </div>
-                            <br>
+                            
                             <?php endif?>
 
                             <?php if (class_exists('\MetForm\Core\Integrations\Mail_Chimp')): ?>
@@ -321,14 +331,14 @@
                                             target="_blank"
                                             href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure Mail Chimp.', 'metform');?></a></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-mailchimp">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('MailChimp List ID:', 'metform');?> <span
                                         class="dashicons dashicons-update metfrom-btn-refresh-mailchimp-list"></span></label>
 
                                 <select class="attr-form-control mailchimp_list">
-                                    <option>Select List</option>
+                                    
                                 </select>
 
                                 <input type="hidden" name="mf_mailchimp_list_id"
@@ -336,7 +346,7 @@
                                     placeholder="<?php esc_html_e('Mailchimp contact list id', 'metform');?>">
 
                             </div>
-                            <br>
+                            
                             <?php endif?>
 
 
@@ -360,7 +370,7 @@
 	                                    </strong>
 	                                </span>
 	                            </div>
-	                            <br>
+	                            
 	                            <div class="mf-input-group mf-mail-poet">
 	                                <label for="attr-input-label"
 	                                    class="attr-input-label"><?php esc_html_e('MailPoet List ID:', 'metform');?></label>
@@ -376,7 +386,7 @@
 	                                    <span id="mf_mail_poet_info"></span>
 	                                </span>
 	                            </div>
-	                            <br>
+	                            
 
 	                            <?php endif;?>
 
@@ -391,7 +401,7 @@
                                             target="_blank"
                                             href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings#mf-newsletter_integration'; ?>"><?php esc_html_e('Configure aweber.', 'metform');?></a></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-aweber">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Aweber List ID:', 'metform');?></label>
@@ -407,7 +417,7 @@
                                     <span id="mf_aweber_info"></span>
                                 </span>
                             </div>
-                            <br>
+                            
 
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
@@ -420,7 +430,7 @@
                                             target="_blank"
                                             href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure ConvertKit.', 'metform');?></a></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-ckit">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('ConvertKit Forms ID:', 'metform');?></label>
@@ -436,7 +446,7 @@
                                     </a>
                                 </span>
                             </div>
-                            <br>
+                            
 
                             <?php endif?>
 
@@ -455,7 +465,7 @@
                                             href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure GetResponse.', 'metform');?></a></strong></span>
 
                             </div>
-                            <br>
+                            
 
                             <div class="mf-input-group mf-get_response">
                                 <label for="attr-input-label"
@@ -474,11 +484,11 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter here GetResponse list id. ', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <?php endif;?>
 
 
-                            <?php if (class_exists('\MetForm\Core\Integrations\Active_Campaign')): ?>
+                            <?php if (class_exists('\MetForm_Pro\Core\Integrations\Email\Activecampaign\Active_Campaign')): ?>
 
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
@@ -492,7 +502,7 @@
                                             href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure ActiveCampaign.', 'metform');?></a></strong></span>
 
                             </div>
-                            <br>
+                            
 
 
                             <?php endif?>
@@ -509,7 +519,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Integrate zapier with this form.', 'metform');?><strong><?php esc_html_e('The form must have at least one Email widget and it should be required.', 'metform');?></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-zapier">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Zapier webhook:', 'metform');?></label>
@@ -518,7 +528,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Enter here zapier web hook.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <?php endif?>
 
                             <?php if (class_exists('\MetForm\Core\Integrations\Slack')): ?>
@@ -531,7 +541,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Integrate slack with this form.', 'metform');?><strong><?php esc_html_e('slack info.', 'metform');?></strong></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group mf-slack">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Slack webhook:', 'metform');?></label>
@@ -541,7 +551,7 @@
                                     class='mf-input-help'><?php esc_html_e('Enter here slack web hook.', 'metform');?><a
                                         href="http://slack.com/apps/A0F7XDUAZ-incoming-webhooks"><?php esc_html_e('create from here', 'metform');?></a></span>
                             </div>
-                            <br>
+                            
                             <?php endif?>
 
                         </div>
@@ -551,7 +561,7 @@
                     <?php if (class_exists('MetForm_Pro\Base\Package')): ?>
                     <div role="tabpanel" class="attr-tab-pane" id="mf-payment">
                         <div class="attr-modal-body" id="metform_form_modal_body">
-                            <div class="mf-input-group">
+                            <!-- <div class="mf-input-group">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Success url:', 'metform');?></label>
                                 <input type="text" name="success_url"
@@ -560,7 +570,7 @@
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Users will be redirected to the this link after successfully form submission.', 'metform');?></span>
                             </div>
-                            <br>
+                            
                             <div class="mf-input-group">
                                 <label for="attr-input-label"
                                     class="attr-input-label"><?php esc_html_e('Failed/ Cancel url:', 'metform');?></label>
@@ -569,7 +579,7 @@
                                     placeholder="<?php esc_html_e('Failed/Cancel url', 'metform');?>">
                                 <span
                                     class='mf-input-help'><?php esc_html_e('Users will be redirected to the this link after any failure/ cancelation of form submission.', 'metform');?></span>
-                            </div>
+                            </div> -->
                             <?php if (class_exists('\MetForm_Pro\Core\Integrations\Payment\Paypal')): ?>
                             <div class="mf-input-group">
                                 <label class="attr-input-label">
@@ -583,7 +593,7 @@
                                         href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure paypal payment.', 'metform');?></a></span>
                             </div>
                             <?php endif?>
-                            <br>
+                            
 
                             <?php if (class_exists('\MetForm_Pro\Core\Integrations\Payment\Stripe')): ?>
                             <div class="mf-input-group">
@@ -598,7 +608,7 @@
                                         href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure stripe payment.', 'metform');?></a></span>
                             </div>
                             <?php endif?>
-                            <br>
+                            
 
                         </div>
 
@@ -619,7 +629,6 @@
                                         target="_blank"
                                         href="<?php echo get_dashboard_url() . 'admin.php?page=metform-menu-settings'; ?>"><?php esc_html_e('Configure Hubsopt.', 'metform');?></a></span>
                             </div>
-                            <hr>
 
                             <div class="mf-input-group">
 
@@ -628,7 +637,7 @@
                                         class="mf-admin-control-input mf-hubspot-forms">
                                     <span><?php esc_html_e('Hubsopt Forms:', 'metform');?></span>
                                 </label>
-                                <br><br>
+                                
 
                                 <div class="hubspot_forms_section">
 
@@ -654,7 +663,6 @@
 
                             <!-- Zoho integration  -->
 
-                                <hr>
 
                                 <div class="mf-input-group">
                                 <label class="attr-input-label">

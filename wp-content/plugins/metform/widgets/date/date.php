@@ -6,6 +6,15 @@ Class MetForm_Input_Date extends Widget_Base{
 	use \MetForm\Traits\Common_Controls;
 	use \MetForm\Traits\Conditional_Controls;
 	use \MetForm\Widgets\Widget_Notice;
+	
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->add_style_depends('flatpickr');
+
+		foreach ($this->get_locales() as $key => $value) {
+			wp_register_script( 'flatpickr-'.$key, plugin_dir_url(__FILE__) . '../../public/assets/js/lang/'. $key .'.js', false, null, true );
+		}
+	}
 
     public function get_name() {
 		return 'mf-date';
@@ -25,7 +34,71 @@ Class MetForm_Input_Date extends Widget_Base{
 
 	public function get_keywords() {
         return ['metform', 'input', 'date', 'calendar'];
-    }
+	}
+	
+	public function get_locales() {
+		return [
+			'sq'	=> esc_html__( 'Albanian', 'metform' ),
+			'ar'	=> esc_html__( 'Arabic', 'metform' ),
+			'at'	=> esc_html__( 'Austria', 'metform' ),
+			'az'	=> esc_html__( 'Azerbaijan', 'metform' ),
+			'bn'	=> esc_html__( 'Bangla', 'metform' ),
+			'be'	=> esc_html__( 'Belarusian', 'metform' ),
+			'bs'	=> esc_html__( 'Bosnian', 'metform' ),
+			'bg'	=> esc_html__( 'Bulgarian', 'metform' ),
+			'my'	=> esc_html__( 'Burmese', 'metform' ),
+			'cat'	=> esc_html__( 'Catalan', 'metform' ),
+			'hr'	=> esc_html__( 'Croatian', 'metform' ),
+			'cs'	=> esc_html__( 'Czech', 'metform' ),
+			'da'	=> esc_html__( 'Danish', 'metform' ),
+			'nl'	=> esc_html__( 'Dutch', 'metform' ),
+			''		=> esc_html__( 'English', 'metform' ),
+			'eo'	=> esc_html__( 'Esperanto', 'metform' ),
+			'et'	=> esc_html__( 'Estonian', 'metform' ),
+			'fo'	=> esc_html__( 'Faroese', 'metform' ),
+			'fi'	=> esc_html__( 'Finnish', 'metform' ),
+			'fr'	=> esc_html__( 'French', 'metform' ),
+			'ka'	=> esc_html__( 'Georgian', 'metform' ),
+			'de'	=> esc_html__( 'German', 'metform' ),
+			'gr'	=> esc_html__( 'Greek', 'metform' ),
+			'he'	=> esc_html__( 'Hebrew', 'metform' ),
+			'hi'	=> esc_html__( 'Hindi', 'metform' ),
+			'hu'	=> esc_html__( 'Hungarian', 'metform' ),
+			'is'	=> esc_html__( 'Icelandic', 'metform' ),
+			'id'	=> esc_html__( 'Indonesian', 'metform' ),
+			'it'	=> esc_html__( 'Italian', 'metform' ),
+			'ja'	=> esc_html__( 'Japanese', 'metform' ),
+			'kz'	=> esc_html__( 'Kazakh', 'metform' ),
+			'km'	=> esc_html__( 'Khmer', 'metform' ),
+			'ko'	=> esc_html__( 'Korean', 'metform' ),
+			'lv'	=> esc_html__( 'Latvian', 'metform' ),
+			'lt'	=> esc_html__( 'Lithuanian', 'metform' ),
+			'mk'	=> esc_html__( 'Macedonian', 'metform' ),
+			'ms'	=> esc_html__( 'Malaysian', 'metform' ),
+			'zh'	=> esc_html__( 'Mandarin', 'metform' ),
+			'zh-tw'	=> esc_html__( 'MandarinTraditional', 'metform' ),
+			'mn'	=> esc_html__( 'Mongolian', 'metform' ),
+			'no'	=> esc_html__( 'Norwegian', 'metform' ),
+			'fa'	=> esc_html__( 'Persian', 'metform' ),
+			'pl'	=> esc_html__( 'Polish', 'metform' ),
+			'pt'	=> esc_html__( 'Portuguese', 'metform' ),
+			'pa'	=> esc_html__( 'Punjabi', 'metform' ),
+			'ro'	=> esc_html__( 'Romanian', 'metform' ),
+			'ru'	=> esc_html__( 'Russian', 'metform' ),
+			'sr'	=> esc_html__( 'Serbian', 'metform' ),
+			'sr-cyr'	=> esc_html__( 'SerbianCyrillic', 'metform' ),
+			'si'	=> esc_html__( 'Sinhala', 'metform' ),
+			'sk'	=> esc_html__( 'Slovak', 'metform' ),
+			'sl'	=> esc_html__( 'Slovenian', 'metform' ),
+			'es'	=> esc_html__( 'Spanish', 'metform' ),
+			'sv'	=> esc_html__( 'Swedish', 'metform' ),
+			'th'	=> esc_html__( 'Thai', 'metform' ),
+			'tr'	=> esc_html__( 'Turkish', 'metform' ),
+			'uk'	=> esc_html__( 'Ukrainian', 'metform' ),
+			'vn'	=> esc_html__( 'Vietnamese', 'metform' ),
+			'cy'	=> esc_html__( 'Welsh', 'metform' ),
+		];
+	}
 	
     protected function _register_controls() {
         
@@ -52,9 +125,18 @@ Class MetForm_Input_Date extends Widget_Base{
 		$this->input_setting_controls();
 
 		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
+
+		$this->add_control(
 			'mf_input_min_date',
 			[
-				'label' => esc_html__( 'Set minimum date : ', 'metform' ),
+				'label' => esc_html__( 'Set minimum date:', 'metform' ),
 				'type' => Controls_Manager::DATE_TIME,
 				'picker_options' => [
 					'enableTime' => false,
@@ -65,7 +147,7 @@ Class MetForm_Input_Date extends Widget_Base{
 		$this->add_control(
 			'mf_input_max_date',
 			[
-				'label' => esc_html__( 'Set maximum date : ', 'metform' ),
+				'label' => esc_html__( 'Set maximum date:', 'metform' ),
 				'type' => Controls_Manager::DATE_TIME,
 				'picker_options' => [
 					'enableTime' => false,
@@ -89,7 +171,7 @@ Class MetForm_Input_Date extends Widget_Base{
 		$this->add_control(
 			'mf_input_disable_date_list',
 			[
-				'label' => __( 'Disable date  List', 'plugin-domain' ),
+				'label' => esc_html__( 'Disable date List', 'metform' ),
 				'type' => Controls_Manager::REPEATER,
 				'fields' => $repeater->get_controls(),
 				'title_field' => '{{{ mf_input_disable_date }}}',
@@ -178,6 +260,17 @@ Class MetForm_Input_Date extends Widget_Base{
 						],
 					]
 				],
+			]
+		);
+
+		$this->add_control(
+			'locale',
+			[
+				'label'			=> esc_html__( 'Localization', 'metform' ),
+				'description'	=> esc_html__( 'Language change will be shown on preview.', 'metform' ),
+				'type'			=> Controls_Manager::SELECT,
+				'options'		=> $this->get_locales(),
+				'default'		=> '',
 			]
 		);
 
@@ -369,9 +462,29 @@ Class MetForm_Input_Date extends Widget_Base{
 		$this->insert_pro_message();
 	}
 
+	public function format_date($format, $array){
+		$response = [];
+		foreach($array as $date){
+			$response[] = date($format, strtotime($date));
+		}
+		return $response;
+	}
+
     protected function render($instance = []){
 		$settings = $this->get_settings_for_display();
+		$inputWrapStart = $inputWrapEnd = '';
 		extract($settings);
+
+		$render_on_editor = true;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
 
 		if(is_array($mf_input_disable_date_list)){
 			$disable_dates = [];
@@ -388,34 +501,72 @@ Class MetForm_Input_Date extends Widget_Base{
 											(($mf_input_month_select == 'yes') ? 'm' :
 												(($mf_input_date_select == 'yes') ? 'd' : 'd-m-Y')))))));
 
+		if( esc_attr($mf_input_date_with_time) && !empty($mf_input_date_with_time) ){
+			$date_format .= " H:i";
+		}
 		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+		];
 
-		echo "<div class='mf-input-wrapper'>";
-												
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-date-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '')?></span>
-			</label>
-			<?php
-		}
-        ?>
-		<input type="text" class="mf-input mf-date-input <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>"
-			name="<?php echo esc_attr($mf_input_name); ?>" 
-			placeholder="<?php echo esc_html($mf_input_placeholder); ?>"
-			data-mfMinDate = "<?php echo esc_attr($mf_input_min_date); ?>"
-			data-mfMaxDate= "<?php echo esc_attr($mf_input_max_date); ?>"
-			data-mfRangeDate = "<?php echo esc_attr($mf_input_range_date); ?>"
-			data-mfDateFormat="<?php echo esc_attr($date_format); ?>"
-			data-mfEnableTime="<?php echo esc_attr($mf_input_date_with_time); ?>"
-			data-mfDisableDates="<?php echo esc_attr(json_encode(isset($disable_dates) ? $disable_dates : '')); ?>"
-			<?php //echo esc_attr($mf_input_readonly_status); ?>
-		>
+		$is_date_disabled = isset ( $disable_dates ) ? $this->format_date($date_format, $disable_dates) : [];
+		$current_date_mode = $mf_input_range_date && $mf_input_range_date == 'yes' ? 'range' : 'single';
+
+		if ( 'yes' === $mf_input_date_with_time ) $mf_input_date_with_time = true;
+		
+		$dateConfig = [
+			'minDate'		=> $mf_input_min_date,
+			'maxDate'		=> $mf_input_max_date,
+			'dateFormat' 	=> $date_format,
+			'enableTime'	=> $mf_input_date_with_time,
+			'disable'		=> $is_date_disabled,
+			'mode'			=> $current_date_mode,
+			'static'		=> true,
+			'disableMobile'	=> true
+		];
+
+		if ( $locale ):
+			$dateConfig['locale'] = $locale;
+			wp_enqueue_script( 'flatpickr-' . $locale );
+		endif;
+		?>
+		
+		<?php echo $inputWrapStart; ?>
+
+		<div className="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label className="mf-input-label" htmlFor="mf-input-date-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span className="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<${props.Flatpickr}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					className="mf-input mf-date-input mf-left-parent <?php echo esc_attr( $class ); ?>"
+					placeholder="<?php echo apply_filters( 'metform_placeholder', esc_attr($mf_input_placeholder), $render_on_editor ); ?>"
+					options=${<?php echo json_encode( $dateConfig ); ?>}
+					value=${parent.getValue('<?php echo esc_attr( $mf_input_name ); ?>')}
+					onInput=${parent.handleDateTime}
+					aria-invalid=${validation.errors['<?php echo esc_attr( $mf_input_name ); ?>'] ? 'true' : 'false'}
+					ref=${register({ name: "<?php echo esc_attr($mf_input_name); ?>" }, parent.activateValidation(<?php echo json_encode($configData); ?>))}
+					/>
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+			<?php echo '' != $mf_input_help_text ? '<span className="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
+		<?php echo $inputWrapEnd; ?>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
 
 }

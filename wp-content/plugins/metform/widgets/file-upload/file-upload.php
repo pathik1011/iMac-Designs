@@ -82,6 +82,15 @@ Class MetForm_Input_File_Upload extends Widget_base{
 		);
 
         $this->input_setting_controls();
+
+		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
         
         $this->add_control( 
             'mf_input_file_size_status', 
@@ -389,45 +398,77 @@ Class MetForm_Input_File_Upload extends Widget_base{
 
     protected function render($instance = []){
 		$settings = $this->get_settings_for_display();
+		$inputWrapStart = $inputWrapEnd = '';
         extract($settings);
+
+		$render_on_editor = true;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
 
         $accept = (is_array($mf_input_file_types)) ? implode(', ', $mf_input_file_types) : '.jpg, .jpeg, .gif, .ico';
 
 		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
 
-		echo "<div class='mf-input-wrapper'>";
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+		];
+		?>
 		
-		if($mf_input_label_status == 'yes'){
-			?>
-            <label class="mf-input-label" for="mf-input-file-upload-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-                <span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-            </label>
-			<?php
-		}
-        ?>
-		<div class="mf-file-upload-container">
-			<input type="file" class="mf-input mf-input-file-upload <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-file-upload-<?php echo esc_attr($this->get_id()); ?>" 
-				name="<?php echo esc_attr($mf_input_name); ?>" 
-				accept="<?php echo esc_attr($accept != null ? $accept : '');?>"
-				<?php //echo esc_attr($mf_input_readonly_status); ?>
-			>
-			<label for="mf-input-file-upload-<?php echo esc_attr($this->get_id()); ?>" class="mf-input-file-upload-label metform-btn">
-				<?php 
-					echo '<span>'. esc_html__('Choose a file', 'metform') .'</span>';
+		<?php echo $inputWrapStart; ?>
 
-					Icons_Manager::render_icon( $settings['mf_input_file_upload_icon'], [ 'aria-hidden' => 'true' ] );
-				?>
-			</label>
-			<div class="mf-file-name">
-				<span><?php esc_html_e('No file chosen.', 'metform'); ?></span>
+		<div className="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label className="mf-input-label" htmlFor="mf-input-file-upload-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span className="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<div className="mf-file-upload-container">
+				<input
+					type="file"
+					className="mf-input mf-input-file-upload <?php echo $class; ?>"
+					id="mf-input-file-upload-<?php echo esc_attr($this->get_id()); ?>" 
+					name="<?php echo esc_attr($mf_input_name); ?>" 
+					accept="<?php echo esc_attr($accept != null ? $accept : '');?>"
+					onInput=${ parent.handleFileUpload }
+					aria-invalid=${validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'true' : 'false'}
+					ref=${ el => parent.activateValidation(<?php echo json_encode($configData); ?>, el) }
+					/>
+				<label htmlFor="mf-input-file-upload-<?php echo esc_attr($this->get_id()); ?>" className="mf-input-file-upload-label metform-btn">
+					<?php 
+						echo '<span>'. esc_html__('Choose a file', 'metform') .'</span>';
+
+						Icons_Manager::render_icon( $settings['mf_input_file_upload_icon'], [ 'aria-hidden' => 'true' ] );
+					?>
+				</label>
+				<div className="mf-file-name">
+					<span>${parent.getFileLabel( '<?php echo esc_attr($mf_input_name); ?>', '<?php esc_html_e('No file chosen.', 'metform'); ?>' )}</span>
+				</div>
+				
 			</div>
-			
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+			<?php echo '' != $mf_input_help_text ? '<span className="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
 		</div>
+
+		<?php echo $inputWrapEnd; ?>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
 
 }

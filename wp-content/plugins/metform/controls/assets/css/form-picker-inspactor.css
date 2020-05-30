@@ -187,6 +187,7 @@
 	position: relative;
 	margin: 0;
 	margin-right: 8px;
+	cursor: pointer;
 }
 #metform-open-content-editor .metform-content-editor-radio:checked{
 	border-color: #4285F4;
@@ -341,13 +342,33 @@
 	max-height: 180px;
 }
 .metform-form-edit-btn {
-    position: absolute;
-    right: 60px;
+	position: absolute;
+    left: 135px;
     top: 0;
     color: #4285F4;
     font-size: 15px;
     text-transform: uppercase;
     padding: 18px 0;
+}
+.metform-form-update-close-btn {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    font-size: 14px;
+    text-transform: uppercase;
+    background-color: #39b54a;
+    color: #fff;
+    padding: 10px 25px;
+    border-radius: 100px;
+    z-index: 1;
+    cursor: pointer;
+    line-height: 15px;
+    padding-top: 10px;
+    transition: all .4s;
+}
+.metform-form-update-close-btn:hover {
+	background-color: #2d963c;
+	color: #fff;
 }
 .metform-form-edit-btn:hover{
 	color: #4285F4;
@@ -382,3 +403,21 @@
 	box-shadow: none;
 	margin-left: 10px;
 }
+
+/* form edit button */
+.mf-edit-form {
+    display: block;
+    background-color: #39b54a;
+    border: none;
+    color: #fff;
+    margin-top: 15px;
+    padding: 12px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 3px;
+    transition: all .4s;
+  }
+  .mf-edit-form:hover {
+	background-color: #da3419;
+  }

@@ -42,7 +42,7 @@ class Widget_Met_Form extends Widget_Base {
             [
                 'label' => '',
                 'type' => \Elementor\Controls_Manager::RAW_HTML,
-                'raw' => 'See this video tutorial how to use metform. <a href="https://youtu.be/8R4-Q14cu-w" target="_blank">Click here</a>',
+                'raw' => 'See this video tutorial how to use metform. <a href="https://youtu.be/8R4-Q14cu-w" target="_blank">Click here</a> <button class="mf-edit-form">Edit Form</button>',
             ]
         );
 		$this->add_control(
@@ -103,4 +103,3 @@ class Widget_Met_Form extends Widget_Base {
 		echo '</div>';
 	}
 }
-

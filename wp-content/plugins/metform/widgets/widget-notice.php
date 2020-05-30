@@ -26,7 +26,7 @@ trait Widget_Notice{
                     'type' => \Elementor\Controls_Manager::CHOOSE,
                     'options' => [
                         '1' => [
-                            'title' => __('', 'metform'),
+                            'title' => '',
                             'icon' => 'fa fa-unlock-alt',
                         ],
                     ],

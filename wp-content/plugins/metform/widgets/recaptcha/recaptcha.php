@@ -4,11 +4,6 @@ defined( 'ABSPATH' ) || exit;
 
 Class MetForm_Input_Recaptcha extends Widget_Base{
 	use \MetForm\Widgets\Widget_Notice;
-    
-    // public function __construct( $data = [], $args = null ) {
-	// 	parent::__construct( $data, $args );
-	// 	$this->add_script_depends('recaptcha-v2');
-	// }
 
     public function get_name() {
 		return 'mf-recaptcha';
@@ -56,7 +51,31 @@ Class MetForm_Input_Recaptcha extends Widget_Base{
 				'type' => Controls_Manager::TEXT,
 			]
 		);
+		$this->end_controls_section();
 
+        $this->start_controls_section(
+			'style_section',
+			[
+				'label' => esc_html__( 'Label', 'metform' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+			$this->add_control(
+				'mf_input_required_indicator_color',
+				[
+					'label' => esc_html__( 'Required Indicator Color:', 'metform' ),
+					'type' => Controls_Manager::COLOR,
+					'scheme' => [
+						'type' => Scheme_Color::get_type(),
+						'value' => Scheme_Color::COLOR_1,
+					],
+					'default' => '#f00',
+					'selectors' => [
+						'{{WRAPPER}} .mf-error-message' => 'color: {{VALUE}}',
+						'.g-recaptcha[aria-invalid="true"] > div:before, .g-recaptcha[aria-invalid="true"] > div:after, .g-recaptcha[aria-invalid="true"] > div > div:before, .g-recaptcha[aria-invalid="true"] > div > div:after' => 'border-color: {{VALUE}}',
+					],
+				]
+			);
 		$this->end_controls_section();
 
 		$this->insert_pro_message();
@@ -66,35 +85,71 @@ Class MetForm_Input_Recaptcha extends Widget_Base{
         $settings = $this->get_settings_for_display();
 		extract($settings);
 
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+		
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : __("reCAPTCHA is required.", 'metform') : __("reCAPTCHA is required.", 'metform'),
+			'required'		=> true,
+		];
+
 		$recaptcha_setting = \MetForm\Core\Admin\Base::instance()->get_settings_option();
+		$recaptcha_key_v2 = $recaptcha_setting['mf_recaptcha_site_key'];
+		$recaptcha_key_v3 = $recaptcha_setting['mf_recaptcha_site_key_v3'];
 
 		$mf_recaptcha_type = ((isset($recaptcha_setting['mf_recaptcha_version']) && ($recaptcha_setting['mf_recaptcha_version'] != '')) ? $recaptcha_setting['mf_recaptcha_version'] : 'recaptcha-v2');
-
-		echo "<div class='mf-input-wrapper'>";
-
-		if($mf_recaptcha_type == 'recaptcha-v2') {
-			?>
-			<div id="recaptcha_site_key" class="recaptcha_site_key <?php echo esc_attr($mf_recaptcha_class_name); ?>"></div>
+		?>
+		<div class="mf-input-wrapper">
 			<?php
-			if(('metform-form' == get_post_type() || 'page' == get_post_type()) && \Elementor\Plugin::$instance->editor->is_edit_mode()){
-				echo "<div class='attr-alert attr-alert-warning'>".esc_html__('reCAPTCHA V2 will be shown on preview.', 'metform')."</div>";
-			}
-			wp_enqueue_script('recaptcha-v2');
-		}
+				if($mf_recaptcha_type == 'recaptcha-v2') {
+					?>
 
-		if($mf_recaptcha_type == 'recaptcha-v3'){
+					<div
+						class="g-recaptcha <?php echo esc_attr( $mf_recaptcha_class_name ); ?>"
+						data-sitekey="<?php echo esc_attr( $recaptcha_key_v2 ); ?>"
+						<?php if ( !$is_edit_mode ): ?>
+							data-callback="handleReCAPTCHA"
+							data-expired-callback="handleReCAPTCHA"
+							data-error-callback="handleReCAPTCHA"
+							aria-invalid=${validation.errors['g-recaptcha-response'] ? 'true' : 'false'}
+						<?php endif; ?>
+						></div>
+
+					<?php if ( !$is_edit_mode ): ?>
+						<input type="hidden"
+							name="g-recaptcha-response"
+							value=${parent.getValue('g-recaptcha-response')}
+							ref=${el => parent.activateValidation(<?php echo json_encode($configData); ?>, el)}
+							/>
+
+						<${validation.ErrorMessage} errors=${validation.errors} name="g-recaptcha-response" as=${html`<span className="mf-error-message"></span>`} />
+					<?php else: ?>
+						<div class="attr-alert attr-alert-warning" style="display: none; margin-bottom: 0;">
+							<?php esc_html_e('reCAPTCHA will be shown on preview.', 'metform'); ?>
+						</div>
+					<?php endif; ?>
+
+					<?php
+					wp_enqueue_script('recaptcha-v2');
+				}
+
+				if($mf_recaptcha_type == 'recaptcha-v3'){
+					?>
+					
+					<div id="recaptcha_site_key_v3" class="recaptcha_site_key_v3 <?php echo esc_attr($mf_recaptcha_class_name); ?>">
+						<input type="hidden" class="g-recaptcha-response-v3" name="g-recaptcha-response-v3" />
+					</div>
+					
+					<?php
+					if(('metform-form' == get_post_type() || 'page' == get_post_type()) && \Elementor\Plugin::$instance->editor->is_edit_mode()){
+						echo "<div class='attr-alert attr-alert-warning' style='margin-bottom: 0;'>".esc_html__('reCAPTCHA will be shown on preview.', 'metform')."</div>";
+					}
+					wp_enqueue_script('recaptcha-v3');
+				}
 			?>
-			<div id="recaptcha_site_key_v3" class="recaptcha_site_key_v3 <?php echo esc_attr($mf_recaptcha_class_name); ?>">
-				<input type="hidden" class="g-recaptcha-response-v3" name="g-recaptcha-response-v3">
-			</div>
-			<?php
-			if(('metform-form' == get_post_type() || 'page' == get_post_type()) && \Elementor\Plugin::$instance->editor->is_edit_mode()){
-				echo "<div class='attr-alert attr-alert-warning'>".esc_html__('reCAPTCHA V3 will be shown on preview.', 'metform')."</div>";
-			}
-			wp_enqueue_script('recaptcha-v3');
-		}
-		echo '</div>';
+		</div>
 
+		<?php
     }
     
 }

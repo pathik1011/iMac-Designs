@@ -47,7 +47,7 @@ class Form_Data
                                 echo "</td>";
                             }
 
-                            if ($value['widgetType'] == 'mf-like-dislike') {
+                            if (isset($value['widgetType']) && ($value['widgetType'] == 'mf-like-dislike')) {
                                 $like_dislike = (isset($form_data[$key]) ? $form_data[$key] : '');
                                 echo "<td>";
                                 echo (($like_dislike == '1') ? "<span class='dashicons dashicons-thumbs-up'></span>" : "");

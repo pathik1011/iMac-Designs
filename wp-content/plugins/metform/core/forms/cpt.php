@@ -61,6 +61,9 @@ class Cpt extends \MetForm\Base\Cpt
             'count_views' => [
                 'name' => 'count_views',
             ],
+            'mf_stop_vertical_scrolling' => [
+                'name' => 'mf_stop_vertical_scrolling',
+            ],
             'multiple_submission' => [
                 'name' => 'multiple_submission',
             ],

@@ -120,37 +120,54 @@ Class MetForm_Input_Email extends widget_base{
 		$settings = $this->get_settings_for_display();
 		extract($settings);
 
-		$validation = [
-			'min_length' => isset($mf_input_min_length) ? $mf_input_min_length : '',
-			'max_length' => isset($mf_input_max_length) ? $mf_input_max_length : '',
-			'validation_type' => isset($mf_input_validation_type) ? $mf_input_validation_type : '',
-			'expression' => isset($mf_input_validation_expression) ? $mf_input_validation_expression : '',
-			'warning_message' => isset($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : '',
-		];
-		
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+
 		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
 
-		echo "<div class='mf-input-wrapper'>";
-		
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-email-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '')?></span>
-			</label>
-			<?php
-		}
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+			'emailMessage'	=> esc_html__('Please enter a valid Email address', 'metform'),
+			'minLength'		=> isset($mf_input_min_length) ? $mf_input_min_length : 1,
+			'maxLength'		=> isset($mf_input_max_length) ? $mf_input_max_length : '',
+			'type'			=> isset($mf_input_validation_type) ? $mf_input_validation_type : '',
+			'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+			'expression'	=> isset($mf_input_validation_expression) && !empty(trim($mf_input_validation_expression)) ? trim($mf_input_validation_expression) : 'null'
+		];
         ?>
-		<input type="email" class="mf-input <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-email-<?php echo esc_attr($this->get_id()); ?>" 
-			name="<?php echo esc_attr($mf_input_name); ?>" 
-			placeholder="<?php echo esc_html($mf_input_placeholder); ?>" 
-			data-validation = "<?php echo esc_attr(json_encode($validation)); ?>"
-			<?php //echo esc_attr($mf_input_readonly_status); ?>
-		>
+
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-email-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+	
+			<input
+				type="email"
+				class="mf-input <?php echo $class; ?>"
+				id="mf-input-email-<?php echo esc_attr($this->get_id()); ?>"
+				name="<?php echo esc_attr($mf_input_name); ?>"
+				placeholder="<?php echo apply_filters( 'metform_placeholder', esc_attr($mf_input_placeholder), $render_on_editor ); ?>"
+				<?php if ( !$is_edit_mode ): ?>
+					onInput=${parent.handleChange}
+					aria-invalid=${validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'true' : 'false'}
+					ref=${el => parent.activateValidation(<?php echo json_encode($configData); ?>, el)}
+				<?php endif; ?>
+				/>
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+			<?php echo '' != $mf_input_help_text ? '<span class="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
 
 }

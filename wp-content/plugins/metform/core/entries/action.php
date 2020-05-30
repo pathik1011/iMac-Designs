@@ -53,7 +53,7 @@ class Action
         $this->post_type = Base::instance()->cpt->get_name();
     }
 
-    public function submit($form_id, $form_data, $file_data)
+    public function submit($form_id, $form_data, $file_data, $page_id = '')
     {
 
         $this->form_id = $form_id;
@@ -177,9 +177,11 @@ class Action
         }
 
         // signature input upload as image from base64
-        if (class_exists('\MetForm_Pro\Base\Package')) {
+        if (class_exists('\MetForm_Pro\Base\Package') && isset($form_data['mf-signature'])) {
 
             $signature_input = $this->get_input_name_by_widget_type('mf-signature');
+            $this->response->data['signature_name'] = $signature_input;
+            $this->response->data['signature_input_data'] = $form_data['mf-signature'];
 
             if ($signature_input != null) {
                 $inputs = (is_array($signature_input) ? $signature_input : []);
@@ -196,7 +198,6 @@ class Action
 
         if (class_exists('\MetForm_Pro\Core\Integrations\Crm\Hubspot\Hubspot')) {
 
-         
             $hubspot = new \MetForm_Pro\Core\Integrations\Crm\Hubspot\Hubspot();
 
             if (isset($this->form_settings['mf_hubspot']) && $this->form_settings['mf_hubspot'] == '1') {
@@ -243,7 +244,7 @@ class Action
             if (isset($this->form_settings['mf_registration']) && $this->form_settings['mf_registration'] == '1') {
 
                 $register = new \MetForm_Pro\Core\Integrations\Auth\Register\Register();
-                $register->action($form_id,$form_data);
+                $register->action($form_id, $form_data);
 
             }
 
@@ -260,7 +261,7 @@ class Action
             if (isset($this->form_settings['mf_login']) && $this->form_settings['mf_login'] == '1') {
 
                 $login = new \MetForm_Pro\Core\Integrations\Auth\Login\Login();
-                $login->action($form_id,$form_data);
+                $login->action($form_id, $form_data);
 
             }
 
@@ -287,7 +288,7 @@ class Action
         if (class_exists('MetForm_Pro\Core\Integrations\Email\Activecampaign\Active_Campaign')) {
             if (isset($this->form_settings['mf_active_campaign']) && $this->form_settings['mf_active_campaign'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
 
-                $active_campaign = new \MetForm\Core\Integrations\Active_Campaign();
+                $active_campaign = new \MetForm_Pro\Core\Integrations\Email\Activecampaign\Active_Campaign();
 
                 $response = $active_campaign->call_api($form_data, ['auth' => $this->form_settings, 'email_name' => $this->email_name]);
 
@@ -357,32 +358,38 @@ class Action
             }
         }
 
-        // #Adding convertKit..........
-        // if (class_exists('\MetForm_Pro\Core\Integrations\Convert_Kit')) {
-        //     if (isset($this->form_settings['mf_convert_kit']) && $this->form_settings['mf_convert_kit'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
+        /**
+         * Checking if convertKit is exists
+         * If exists calling the api
+         */
+        if (class_exists('\MetForm_Pro\Core\Integrations\Convert_Kit')) {
+            if (isset($this->form_settings['mf_convert_kit']) && $this->form_settings['mf_convert_kit'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
 
-        //         $cKit = new \MetForm_Pro\Core\Integrations\Convert_Kit(false);
+                $cKit = new \MetForm_Pro\Core\Integrations\Convert_Kit(false);
 
-        //         $response = $cKit->call_api($form_data, ['mail_settings' => $this->form_settings, 'email_name' => $this->email_name]);
+                $response = $cKit->call_api($form_data, ['mail_settings' => $this->form_settings, 'email_name' => $this->email_name]);
 
-        //         $this->response->status = isset($response['status']) ? $response['status'] : 0;
-        //     }
-        // }
+                $this->response->status = isset($response['status']) ? $response['status'] : 0;
+            }
+        }
 
-        #Adding Aweber..........
-        // if(class_exists('\MetForm_Pro\Core\Integrations\Aweber')) {
-        //     if (isset($this->form_settings['mf_mail_aweber']) && $this->form_settings['mf_mail_aweber'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
+        /*
+         * Aweber integration
+         *
+         */
+        if (class_exists('\MetForm_Pro\Core\Integrations\Aweber')) {
+            if (isset($this->form_settings['mf_mail_aweber']) && $this->form_settings['mf_mail_aweber'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
 
-        //         $aweber = new \MetForm_Pro\Core\Integrations\Aweber(false);
+                $aweber = new \MetForm_Pro\Core\Integrations\Aweber(false);
 
-        //         $response = $aweber->call_api($form_data, ['mail_settings' => $this->form_settings, 'email_name' => $this->email_name]);
+                $response = $aweber->call_api($form_data, ['mail_settings' => $this->form_settings, 'email_name' => $this->email_name]);
 
-        //         $this->response->status = isset($response['status']) ? $response['status'] : 0;
-        //     }
-        // }
+                $this->response->status = isset($response['status']) ? $response['status'] : 0;
+            }
+        }
 
-	    if(defined('MAILPOET_VERSION') && class_exists('\MetForm_Pro\Core\Integrations\Mail_Poet')) {
-		    if (isset($this->form_settings['mf_mail_poet']) && $this->form_settings['mf_mail_poet'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
+        if (defined('MAILPOET_VERSION') && class_exists('\MetForm_Pro\Core\Integrations\Mail_Poet')) {
+            if (isset($this->form_settings['mf_mail_poet']) && $this->form_settings['mf_mail_poet'] == '1' && $this->email_name != null && $form_data[$this->email_name] != '') {
 
                 $mPoet = new \MetForm_Pro\Core\Integrations\Mail_Poet(false);
 
@@ -415,6 +422,8 @@ class Action
             ];
 
             $this->entry_id = wp_insert_post($defaults);
+
+            update_post_meta($this->entry_id, 'mf_page_id', $page_id);
 
             $all_data = array_merge($all_data, ['mf_id' => $this->entry_id, 'mf_form_name' => $this->title]);
         }
@@ -748,6 +757,14 @@ class Action
         }
     }
 
+    /**
+     * Converting an png image string to png image file.
+     *
+     * @param $input
+     * @param $b64string
+     *
+     * @return array
+     */
     public function covert_base64_to_png($input, $b64string)
     {
         $status = [];
@@ -756,22 +773,16 @@ class Action
         $upload_path = $upload_dir['path'];
         $upload_url = $upload_dir['url'];
 
-        $bin = str_replace('data:image/png;base64,', '', $b64string);
+        $bin = str_replace('data:image/png;base64,', '', $b64string, $ct);
 
         $decoded = base64_decode($bin);
-
-        $im = imageCreateFromString($decoded);
-
-        if (!$im) {
-            $status['error'] = esc_html__('Base64 value is not a valid image', 'metform');
-        }
 
         $img_name = '/' . $input . time() . '.png';
 
         $img_file = $upload_path . $img_name;
         $img_url = $upload_url . $img_name;
 
-        $img = imagepng($im, $img_file, 0);
+        $img = file_put_contents($img_file, $decoded);
 
         if ($img) {
             $status['status'] = true;
@@ -847,18 +858,21 @@ class Action
     public function process_repeater_data($repeater_data)
     {
         $data = [];
-        foreach ($repeater_data as $index => $value) {
-            if (is_array($value)) {
-                foreach ($value as $input_name => $input_value) {
-                    $proc_key = $input_name . "-" . ($index + 1);
-                    if (is_array($input_value)) {
-                        $data[$proc_key] = implode(', ', $input_value);
-                    } else {
-                        $data[$proc_key] = $input_value;
+        if (is_array($repeater_data)) {
+            foreach ($repeater_data as $index => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $input_name => $input_value) {
+                        $proc_key = $input_name . "-" . ($index + 1);
+                        if (is_array($input_value)) {
+                            $data[$proc_key] = implode(', ', $input_value);
+                        } else {
+                            $data[$proc_key] = $input_value;
+                        }
                     }
                 }
             }
         }
+
         return $data;
     }
 }

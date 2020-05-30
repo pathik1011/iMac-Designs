@@ -33,8 +33,11 @@ class Shortcode
 
 	public function render_thank_you_page($atts)
 	{
+		if($GLOBALS['pagenow'] == 'post.php'){
+			return;
+		}
 		global $post;
-
+		
 		/**
 		 * 
 		 * =============================
@@ -56,11 +59,13 @@ class Shortcode
 		$page_id = 	 $settings['mf_thank_you_page'];
 		$post_id = $_GET['id'];
 
+		error_log($post_id);
+
 		$first_name = get_post_meta(
 			$post_id,
 			'metform_entries__form_data',
 			true
-		)[$a['fname']];
+		)[$a['fname']] ?? '';
 
 
 

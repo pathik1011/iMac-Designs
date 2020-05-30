@@ -5,6 +5,14 @@ defined( 'ABSPATH' ) || exit;
 Class MetForm_Input_Simple_Captcha extends Widget_Base{
 	use \MetForm\Widgets\Widget_Notice;
 	use \MetForm\Traits\Common_Controls;
+    
+    public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+
+		if ( class_exists('\Elementor\Icons_Manager') && method_exists('\Elementor\Icons_Manager', 'enqueue_shim') ) {
+			\Elementor\Icons_Manager::enqueue_shim();
+		}
+	}
 
     public function get_name() {
 		return 'mf-simple-captcha';
@@ -140,10 +148,6 @@ Class MetForm_Input_Simple_Captcha extends Widget_Base{
 				'selectors' => [
 					'{{WRAPPER}} .mf-input-label' => 'width: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .mf-input-wrapper div:not(.mf-captcha-input-wrapper) .mf-input' => 'width: calc(100% - {{SIZE}}{{UNIT}} - 7px)',
-					'{{WRAPPER}} .mf-input-wrapper > .iti' => 'width: calc(100% - {{SIZE}}{{UNIT}} - 7px)',
-					'{{WRAPPER}} .range-slider' => 'width: calc(100% - {{SIZE}}{{UNIT}} - 7px)',
-					'{{WRAPPER}} .mf-input-wrapper .flatpickr-calendar, {{WRAPPER}} .mf-input-wrapper .flatpickr-calendar.hasTime.noCalendar' => 'left: {{SIZE}}{{UNIT}} !important',
-					'{{WRAPPER}} .mf-input-wrapper .select2-container' => 'width: calc(100% - {{SIZE}}{{UNIT}} - 7px) !important',
 					'{{WRAPPER}} .mf-input-wrapper .mf-captcha-input-wrapper' => 'max-width: calc(100% - {{SIZE}}{{UNIT}} - 7px); display: inline-block; vertical-align: middle;',
 				],
 				'condition'    => [
@@ -211,6 +215,23 @@ Class MetForm_Input_Simple_Captcha extends Widget_Base{
 			]
 		);
 
+		$this->add_control(
+			'mf_input_required_indicator_color',
+			[
+				'label' => esc_html__( 'Required Indicator Color:', 'metform' ),
+				'type' => Controls_Manager::COLOR,
+				'scheme' => [
+					'type' => Scheme_Color::get_type(),
+					'value' => Scheme_Color::COLOR_1,
+				],
+				'default' => '#f00',
+				'selectors' => [
+					'{{WRAPPER}} .mf-input-required-indicator, {{WRAPPER}} .mf-error-message' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .mf-input-wrapper .mf-input[aria-invalid="true"]' => 'border-color: {{VALUE}}',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 		
 		$this->start_controls_section(
@@ -254,6 +275,7 @@ Class MetForm_Input_Simple_Captcha extends Widget_Base{
 					'type' => \Elementor\Scheme_Color::get_type(),
 					'value' => \Elementor\Scheme_Color::COLOR_1,
 				],
+				'default' => '#000',
 				'selectors' => [
 					'{{WRAPPER}} .mf-refresh-captcha' => 'color: {{VALUE}}',
 				],
@@ -261,6 +283,21 @@ Class MetForm_Input_Simple_Captcha extends Widget_Base{
 		);
 		
 		$this->end_controls_section();
+		
+        $this->start_controls_section(
+			'help_text_section',
+			[
+				'label' => esc_html__( 'Help Text', 'metform' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'mf_input_help_text!' => ''
+				]
+			]
+		);
+		
+		$this->input_help_text_controls();
+
+        $this->end_controls_section();
 
 		$this->start_controls_section(
 			'placeholder_section',
@@ -277,45 +314,76 @@ Class MetForm_Input_Simple_Captcha extends Widget_Base{
 		$this->insert_pro_message();
 	}
 
-	public function render_script($path){
-		?>
-		    <script>
-				var path = "<?php echo $path; ?>";
-				var refreshButton = document.querySelectorAll(".mf-refresh-captcha");
-				if(refreshButton.length > 0){
-					refreshButton.forEach(function(v, i){
-						v.onclick = function() {
-							this.previousSibling.src = path+'/generate-captcha.php?' + Date.now();
-						}
-					});
-				}
-			</script>
-		<?php
-	}
-
     protected function render($instance = []){
-        $settings = $this->get_settings_for_display();
+		$settings = $this->get_settings_for_display();
+		$inputWrapStart = $inputWrapEnd = '';
 		extract($settings);
 
-		echo "<div class='mf-input-wrapper'>";
+		$render_on_editor = false;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-captcha-<?php echo esc_attr($this->get_id()); ?>">
-				<?php echo esc_html($mf_input_label); ?>
-			</label>
-			<?php
-		}
-		?>
-		<div class="mf-captcha-input-wrapper <?php echo esc_attr('mf-captcha-'.$mf_input_input_captcha_display); ?>">
-			<img src="<?php echo plugin_dir_url( __FILE__ ); ?>generate-captcha.php" alt="CAPTCHA" height="50px" class="mf-input mf-captcha-image"><i class="fas fa-redo mf-refresh-captcha"></i>
-			<input type="text" name="mf-captcha-challenge" class="mf-input mf-captcha-input" id="mf-input-captcha-<?php echo esc_attr($this->get_id()); ?>" placeholder="<?php esc_html_e('Entry captcha from the picture', 'metform')?>">
-		</div>
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
 		
-		<?php
-		echo '</div>';
+		$configData = [
+			'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : __("Captcha didn't matched.", 'metform') : __("Captcha didn't matched.", 'metform'),
+			'required'		=> true,
+		];
 
-		$this->render_script(plugin_dir_url( __FILE__ ));
+		$path = plugin_dir_url( __FILE__ ) . 'generate-captcha.php?';
+		$img_src = !$is_edit_mode ? '${ parent.state.captcha_img || "'. esc_attr( $path ) .'" }' : '"'. esc_attr( $path ) .'"';
+		?>
+
+		<div class="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label class="mf-input-label" for="mf-input-captcha-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span class="mf-input-required-indicator"><?php echo esc_html( '*', 'metform' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<div class="mf-captcha-input-wrapper <?php echo esc_attr('mf-captcha-'.$mf_input_input_captcha_display); ?>">
+				<img
+					src=<?php echo $img_src; ?>
+					alt="CAPTCHA" height="50px"
+					class="mf-input mf-captcha-image"
+					/>
+				
+				<i  class="mf-refresh-captcha"
+					<?php if ( !$is_edit_mode ): ?>
+						data-path=${ parent.state.captcha_path = '<?php echo esc_attr( $path ); ?>' }
+						onClick=${ parent.refreshCaptcha }
+					<?php endif; ?>
+					></i>
+
+				<input type="text"
+					name="mf-captcha-challenge"
+					class="mf-input mf-captcha-input"
+					id="mf-input-captcha-<?php echo esc_attr($this->get_id()); ?>"
+					placeholder="<?php esc_html_e('Entry captcha from the picture', 'metform')?>"
+					<?php if ( !$is_edit_mode ): ?>
+						onInput=${ parent.handleChange }
+						aria-invalid=${validation.errors['mf-captcha-challenge'] ? 'true' : 'false'}
+						ref=${ el => parent.activateValidation(<?php echo json_encode($configData); ?>, el) }
+					<?php endif; ?>
+					/>
+			</div>
+
+			<?php if ( !$is_edit_mode ): ?>
+				<${validation.ErrorMessage} errors=${validation.errors} name="mf-captcha-challenge" as=${html`<span className="mf-error-message"></span>`} />
+			<?php endif; ?>
+			
+			<?php
+			if ( $mf_input_help_text != '' ):
+				echo '<span class="mf-input-help">'.apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ).'</span>';
+			endif;
+			?>
+		</div>
+
+		<?php
     }
-    
 }

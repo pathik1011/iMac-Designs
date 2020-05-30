@@ -187,6 +187,7 @@ class Util{
 
 		return $content;
 	}
+	
 	public static function render_elementor_content($content_id){
 		$elementor_instance = \Elementor\Plugin::instance();
 		return $elementor_instance->frontend->get_builder_content_for_display( $content_id );
@@ -211,11 +212,35 @@ class Util{
 		return str_replace('.elementor-'.$id.' ', '#elementor .elementor-'.$id.' ', $content);
 	}
 
+	public static function mfConvertStyleToReactObj($content){
+		preg_match_all(' /style=("|\')(.*?)("|\')/', $content, $match);
+		if(isset($match) && !empty($match ) && count($match) <= 0) { return $content; }
+		foreach ($match[2] as $i => $item) {    
+			$styles = explode(';', $item);
+			$styleData = [];
+
+			if(isset($styles) && !empty($styles )){
+				foreach($styles as $style){
+					$split = explode(':', $style);
+					$key = isset($split[0]) ? trim($split[0]) : '';
+					$value = isset($split[1]) ? trim($split[1]) : '';
+					if(strlen($key) > 0 && strlen($value)){
+						$styleData[$key] = $value;
+					}
+				}
+			}
+
+			$replaceStyle = (isset($styleData) && !empty($styleData )) ? ' style=${'. json_encode($styleData, JSON_FORCE_OBJECT) .'} ' : '';
+			$content = preg_replace(array(' /style=("|\')('. $item .')("|\')/'), $replaceStyle,$content);
+		}
+
+		return $content;
+	}
+
 	public static function render_form_content($form, $widget_id){
 		$rest_url = get_rest_url();
 		$form_unique_name = (is_numeric($form)) ? ($widget_id.'-'.$form) : $widget_id;
 		$form_id = (is_numeric($form)) ? $form : $widget_id;
-		//$form_settings = \MetForm\Core\Entries\Action::instance()->get_form_settings($form_id);
 		$form_settings = \MetForm\Core\Forms\Action::instance()->get_all_data($form_id);
 
 		$site_key = !empty($form_settings['mf_recaptcha_site_key']) ?  $form_settings['mf_recaptcha_site_key'] : '';
@@ -224,33 +249,70 @@ class Util{
 				$site_key = $form_settings['mf_recaptcha_site_key_v3'];
 			} 
 		}
-
+		
 		ob_start();
 		?>
-		<div class="mf-form-wrapper">
-			<div class="metform-msg attr-alert attr-alert-success attr-container metform-inx"></div>
-			<form id="metform-<?php echo esc_attr($form_unique_name); ?>" 
-				data-nonce="<?php echo wp_create_nonce('wp_rest');?>" 
-				action="<?php echo esc_attr($rest_url."metform/v1/entries/insert/".$form_id); ?>" 
-				method="POST"
-				data-form-id = "<?php echo esc_attr($form_id); ?>"
-				class="metform-form-content"
-				data-site-key="<?php echo esc_attr($site_key); ?>"
-				enctype="multipart/form-data"
-				>
-				<input type="hidden" id="form_nonce-<?php echo esc_attr($form_unique_name); ?>" name="form_nonce" value="<?php echo esc_attr(wp_create_nonce( 'form_nonce' )); ?>" />
-			<?php
-			//wp_nonce_field('form_nonce', 'form_nonce');
-			if(is_numeric($form)){
-				echo \MetForm\Utils\Util::render_elementor_content($form);
-			}else{
-				echo $form;
-			}
-			?>
-			</form>
-		</div>
-		<?php
 
+		<div
+			id="metform-wrap-<?php echo esc_attr( $form_unique_name ); ?>"
+			class="mf-form-wrapper"
+			data-form-id="<?php echo esc_attr( $form_id ); ?>"
+			data-action="<?php echo esc_attr($rest_url. "metform/v1/entries/insert/" .$form_id); ?>"
+			data-wp-nonce="<?php echo wp_create_nonce( 'wp_rest' ); ?>"
+			data-form-nonce="<?php echo wp_create_nonce( 'form_nonce' ); ?>"
+			data-stop-vertical-effect="<?php echo isset($form_settings['mf_stop_vertical_scrolling']) ? $form_settings['mf_stop_vertical_scrolling'] : '' ?>"
+			></div>
+
+		<script type="text" class="mf-template">
+			return html`
+				<form
+					className="metform-form-content"
+					onSubmit=${ validation.handleSubmit( parent.handleFormSubmit ) }
+					>
+
+					<${parent.responseMegCom} success=${state.success} errors=${state.errors} form_res=${state.form_res} />
+
+					${!state.formHide ? html`
+						<?php
+							$replaceStrings = array(
+								'from' => array(
+									'class=',
+									'for=',
+									'cellspacing=',
+									'cellpadding=',
+									'srcset',
+									'colspan',
+									'<script>',			// Script Start Tag
+									'</script>',		// Script End Tag
+									'<br>',
+									'<BR>'
+								),
+								'to' => array(
+									'className=',
+									'htmlFor=',
+									'cellSpacing=',
+									'cellPadding=',
+									'srcSet',
+									'colSpan',
+									'{new Function(`',	// Script Start Tag
+									'`)()}',			// Script End Tag
+									'<br/>',
+									'<br/>'
+								),
+							);
+
+							$form_content = is_numeric( $form ) ? \MetForm\Utils\Util::render_elementor_content( $form ) : $form;
+							$form_content = \MetForm\Utils\Util::mfConvertStyleToReactObj($form_content);
+							$form_content = str_replace( $replaceStrings['from'], $replaceStrings['to'], $form_content );
+							$form_content = preg_replace( '/<!--(.|\s)*?-->/', '', $form_content ); // Removes HTML Comments
+							echo $form_content;
+						?>
+					` : ''}
+				</form>
+			`
+		</script>
+
+		<?php
 		$output = ob_get_contents();
 		ob_end_clean();
 

@@ -26,7 +26,7 @@ class Hooks
 
 		$columns['form_name'] = esc_html__('Form Name', 'metform');
 		
-	
+        $columns['referral'] = esc_html__('Referral','metform');
 
         $columns['date'] = esc_html($date_column);
 
@@ -44,16 +44,19 @@ class Hooks
                 $post_title = (isset($form_name->post_title) ? $form_name->post_title : '');
 
                 global $wp;
-                $current_url = add_query_arg($wp->query_string . "&form_id=" . $form_id, '', home_url($wp->request));
+                $current_url = add_query_arg($wp->query_string . "&mf_form_id=" . $form_id, '', home_url($wp->request));
 
-                echo "<a data-metform-form-id=" . esc_attr($form_id) . " class='mf-entry-filter' href=" . esc_url($current_url) . ">" . esc_html($post_title) . "</a>";
+                echo "<a data-metform-form-id=" . esc_attr($form_id) . " class='mf-entry-filter mf-entry-flter-form_id' href=" . esc_url($current_url) . ">" . esc_html($post_title) . "</a>";
                 break;
 
-			case 'referral':
-				echo 'link';
+            case 'referral':
+                $page_id = get_post_meta( $post_id, 'mf_page_id',true );
 
+                global $wp;
+                $current_url = add_query_arg($wp->query_string . "&mf_ref_id=" . $page_id, '', home_url($wp->request));
+                
+				echo "<a class='mf-entry-filter mf-entry-flter-form_id' href='" . esc_url($current_url) . "'>".get_the_title($page_id)."</a>";
                 break;
-
         }
     }
 
@@ -67,15 +70,32 @@ class Hooks
             && 'metform-entry' == $current_page
             && 'edit.php' == $pagenow
             && $query->query_vars['post_type'] == 'metform-entry'
-            && isset($_GET['form_id'])
-            && $_GET['form_id'] != 'all'
+            && isset($_GET['mf_form_id'])
+            && $_GET['mf_form_id'] != 'all'
         ) {
-            $form_id = sanitize_key($_GET['form_id']);
+            $form_id = sanitize_key($_GET['mf_form_id']);
             $query->query_vars['meta_key'] = 'metform_entries__form_id';
             $query->query_vars['meta_value'] = $form_id;
             $query->query_vars['meta_compare'] = '=';
         }
+
+        if (
+            is_admin()
+            && 'metform-entry' == $current_page
+            && 'edit.php' == $pagenow
+            && $query->query_vars['post_type'] == 'metform-entry'
+            && isset($_GET['mf_ref_id'])
+            && $_GET['mf_ref_id'] != 'all'
+        ) {
+            $page_id = sanitize_key($_GET['mf_ref_id']);
+            $query->query_vars['meta_key'] = 'mf_page_id';
+            $query->query_vars['meta_value'] = $page_id;
+            $query->query_vars['meta_compare'] = '=';
+        }
     }
+
+
+
 
     public function wp_mail_from($name)
     {

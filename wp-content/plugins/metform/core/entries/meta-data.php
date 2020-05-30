@@ -171,7 +171,7 @@ class Meta_Data
 
             function show_file_upload_cmb($post)
             {
-                echo "<div class='mf-file-show'><p class='mf-file'>";
+                echo "<div class='mf-file-show'><p><i class='mf mf-file-2'></i> ";
                 foreach ($this->file_meta_data as $key => $value) {
                     if (empty($this->fields)) {
                         return;

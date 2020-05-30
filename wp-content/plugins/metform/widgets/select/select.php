@@ -36,9 +36,9 @@ Class MetForm_Input_Select extends Widget_Base{
 				'label' => esc_html__( 'Content', 'metform' ),
 				'tab' => Controls_Manager::TAB_CONTENT,
 			]
-		);
+        );
 
-        $this->input_content_controls(['NO_PLACEHOLDER']);
+        $this->input_content_controls();
 
         $input_fields = new Repeater();
 
@@ -127,6 +127,15 @@ Class MetForm_Input_Select extends Widget_Base{
 
 		$this->input_setting_controls();
 
+        $this->add_control(
+            'mf_input_validation_type',
+            [
+                'label' => __( 'Validation Type', 'metform' ),
+                'type' => \Elementor\Controls_Manager::HIDDEN,
+                'default' => 'none',
+            ]
+        );
+
         $this->end_controls_section();
 
         if(class_exists('\MetForm_Pro\Base\Package')){
@@ -151,14 +160,24 @@ Class MetForm_Input_Select extends Widget_Base{
         $this->start_controls_section(
 			'input_section',
 			[
-				'label' => esc_html__( 'Input', 'metform' ),
+				'label' => esc_html__( 'Select', 'metform' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
         );
-
-        $this->input_controls();
-
+            $this->input_controls();
         $this->end_controls_section();
+
+        $this->start_controls_section(
+			'placeholder_section',
+			[
+				'label' => esc_html__( 'Place Holder', 'metform' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+		
+		$this->input_place_holder_controls();
+
+		$this->end_controls_section();
 
         $this->start_controls_section(
 			'help_text_section',
@@ -179,42 +198,88 @@ Class MetForm_Input_Select extends Widget_Base{
 	}
 
     protected function render($instance = []){
-		$settings = $this->get_settings_for_display();
+        $settings = $this->get_settings_for_display();
+        $inputWrapStart = $inputWrapEnd = '';
         extract($settings);
         
-		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		$render_on_editor = true;
+        $is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
 
-		echo "<div class='mf-input-wrapper'>";
-		
-		if($mf_input_label_status == 'yes'){
-			?>
-            <label class="mf-input-label" for="mf-input-select-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-                <span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-            </label>
-			<?php
-		}
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
+
+        $class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+        
+        $configData = [
+            'message' 		=> $errorMessage 	= isset($mf_input_validation_warning_message) ? !empty($mf_input_validation_warning_message) ? $mf_input_validation_warning_message : esc_html__('This field is required.', 'metform') : esc_html__('This field is required.', 'metform'),
+            'minLength'		=> isset($mf_input_min_length) ? $mf_input_min_length : 1,
+            'maxLength'		=> isset($mf_input_max_length) ? $mf_input_max_length : '',
+            'type'			=> isset($mf_input_validation_type) ? $mf_input_validation_type : '',
+            'required'		=> isset($mf_input_required) && $mf_input_required == 'yes' ? true : false,
+        ];
+
+        $mf_default_input_list = array();
+
+        foreach ($mf_input_list as $key => $value):
+            $mf_input_list[$key]['label'] = $value['mf_input_option_text'];
+            $mf_input_list[$key]['value'] = $value['mf_input_option_value'];
+
+           
+            if ( $value['mf_input_option_selected'] ) $mf_default_input_list = $mf_input_list[$key];
+        endforeach;
+       
         ?>
-        <select class="mf-input mf-input-select <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-select-<?php echo esc_attr($this->get_id()); ?>" 
-            name="<?php echo esc_attr($mf_input_name); ?>"
-        >
-            <?php
-            foreach($mf_input_list as $value){
-                ?>
-                <option value="<?php echo esc_attr($value['mf_input_option_value']); ?>"
-                <?php echo esc_attr($value['mf_input_option_status']); ?>
-                <?php echo esc_attr($value['mf_input_option_selected']); ?>
-                >
-                    <?php echo esc_html($value['mf_input_option_text']); ?>
-                </option>
-                <?php
-            }
-            ?>
-        </select>
-		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
+
+        <?php echo $inputWrapStart; ?>
+
+		<div className="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label className="mf-input-label" htmlFor="mf-input-select-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span className="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+            <?php endif; ?>
+
+            <${props.Select}
+                className=${"mf-input mf-input-select <?php echo $class; ?> " + ( validation.errors['<?php echo esc_attr($mf_input_name); ?>'] ? 'mf-invalid' : '' )}
+                classNamePrefix="mf_select"
+                name="<?php echo esc_attr($mf_input_name); ?>"
+                placeholder="<?php echo apply_filters( 'metform_placeholder', esc_attr($mf_input_placeholder), $render_on_editor ); ?>"
+                isSearchable=${false}
+                options=${<?php echo json_encode($mf_input_list); ?>}
+                value=${parent.getValue("<?php echo esc_attr($mf_input_name); ?>") ? <?php echo json_encode($mf_input_list); ?>.filter(item => item.value === parent.getValue("<?php echo esc_attr($mf_input_name); ?>"))[0] : <?php echo json_encode( $mf_default_input_list ); ?>}
+                onChange=${parent.handleSelect}
+                ref=${() => {
+                    register({ name: "<?php echo esc_attr($mf_input_name); ?>" }, parent.activateValidation(<?php echo json_encode($configData); ?>));
+                    if ( parent.getValue("<?php echo esc_attr($mf_input_name); ?>") === '' && <?php echo (count($mf_default_input_list) > 0) ? 'true' : 'false'; ?> ) {
+                        parent.handleChange({
+                            target: {
+                                name: '<?php echo esc_attr($mf_input_name); ?>',
+                                value: '<?php echo (count($mf_default_input_list) > 0) ? esc_attr( $mf_default_input_list["value"] ) : ''; ?>'
+                            }
+                        });
+                        parent.setValue( '<?php echo esc_attr($mf_input_name); ?>', '<?php echo (count($mf_default_input_list) > 0) ? esc_attr( $mf_default_input_list["value"] ) : ''; ?>', true );
+                    }
+                }}
+                />
+
+            <?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
+
+            <?php echo '' != $mf_input_help_text ? '<span className="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
+		</div>
+
+		<?php echo $inputWrapEnd; ?>
+
+        <?php
     }
-    
 }

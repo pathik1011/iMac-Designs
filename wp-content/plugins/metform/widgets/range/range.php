@@ -53,11 +53,21 @@ Class MetForm_Input_Range extends Widget_Base{
 		$this->input_setting_controls();
 
 		$this->add_control(
+			'mf_input_validation_type',
+			[
+				'label' => __( 'Validation Type', 'metform' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'none',
+			]
+		);
+
+		$this->add_control(
 			'mf_input_min_length_range',
 			[
 				'label' => esc_html__( 'Min Length', 'metform' ),
 				'type' => Controls_Manager::NUMBER,
 				'step' => 1,
+				'default' => 0,
 			]
 		);
 		$this->add_control(
@@ -66,36 +76,48 @@ Class MetForm_Input_Range extends Widget_Base{
 				'label' => esc_html__( 'Max Length', 'metform' ),
 				'type' => Controls_Manager::NUMBER,
 				'step' => 1,
-			]
-		);
-		
-		$this->add_control(
-			'mf_input_range_default_value',
-			[
-				'label' => esc_html__( 'Default Value', 'metform' ),
-				'type' => Controls_Manager::TEXT,
-				'description'	=> esc_html__('For range use comma ,')
+				'default' => 100,
 			]
 		);
 
 		$this->add_control(
 			'mf_input_steps_control',
 			[
-				'label' => esc_html__( 'steps', 'metform' ),
+				'label' => esc_html__( 'Steps', 'metform' ),
 				'type' => Controls_Manager::NUMBER,
 				'default' => 1,
 			]
 		);
 
 		$this->add_control(
-			'mf_input_range_control',
+		'mf_input_range_control',
 			[
-				'label' => __( 'Input as range : ', 'metform' ),
+				'label' => __( 'Dual range input:', 'metform' ),
 				'type' => Controls_Manager::SWITCHER,
 				'true' => __( 'Yes', 'metform' ),
 				'false' => __( 'No', 'metform' ),
 				'return_value' => 'true',
 				'default' => 'false',
+			]
+		);
+		
+		$this->add_control(
+			'mf_input_range_important_note',
+			[
+				'type' => Controls_Manager::RAW_HTML,
+				'raw' => __( '<strong>Important Note : </strong> For taking dual range input, You have to enter dual default value in the field Value (Exactly bottom of this notice field. ). Example: Min:10, Max:20', 'metform' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
+				'condition' => [
+					'mf_input_range_control' => 'true'
+				]
+			]
+		);
+
+		$this->add_control(
+			'mf_input_range_default_value',
+			[
+				'label' => esc_html__( 'Value', 'metform' ),
+				'type' => Controls_Manager::TEXT,
 			]
 		);
 
@@ -123,7 +145,7 @@ Class MetForm_Input_Range extends Widget_Base{
         $this->start_controls_section(
 			'input_section',
 			[
-				'label' => esc_html__( 'Input', 'metform' ),
+				'label' => esc_html__( 'Range', 'metform' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
         );
@@ -150,7 +172,7 @@ Class MetForm_Input_Range extends Widget_Base{
                     'size' => 36	,
                 ],
 				'selectors' => [
-					'{{WRAPPER}} .asRange .asRange-pointer .asRange-tip' => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .mf-input-wrapper .input-range__label-container' => 'width: {{SIZE}}{{UNIT}};',
 				]
 			]
 		);
@@ -165,7 +187,7 @@ Class MetForm_Input_Range extends Widget_Base{
                     'size' => 20,
                 ],
 				'selectors' => [
-					'{{WRAPPER}} .asRange .asRange-pointer .asRange-tip' => 'height: {{SIZE}}{{UNIT}}; line-height: {{SIZE}}{{UNIT}}',
+					'{{WRAPPER}} .mf-input-wrapper .input-range__label-container' => 'height: {{SIZE}}{{UNIT}}; line-height: {{SIZE}}{{UNIT}}',
 				]
 			]
 		);
@@ -178,7 +200,7 @@ Class MetForm_Input_Range extends Widget_Base{
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em' ],
                 'selectors' => [
-                    '{{WRAPPER}} .asRange .asRange-pointer .asRange-tip' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .mf-input-wrapper .input-range__label-container' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -206,69 +228,108 @@ Class MetForm_Input_Range extends Widget_Base{
 
     protected function render($instance = []){
 		$settings = $this->get_settings_for_display();
-        extract($settings);
+		$inputWrapStart = $inputWrapEnd = '';
+		extract($settings);
+		
+		$render_on_editor = true;
+		$is_edit_mode = 'metform-form' === get_post_type() && \Elementor\Plugin::$instance->editor->is_edit_mode();
+
+		/**
+		 * Loads the below markup on 'Editor' view, only when 'metform-form' post type
+		 */
+		if ( $is_edit_mode ):
+			$inputWrapStart = '<div class="mf-form-wrapper"></div><script type="text" class="mf-template">return html`';
+			$inputWrapEnd = '`</script>';
+		endif;
 		
 		$class = (isset($settings['mf_conditional_logic_form_list']) ? 'mf-conditional-input' : '');
+		?>
+			
+		<?php echo $inputWrapStart; ?>
 
-		echo "<div class='mf-input-wrapper'>";
-		
-		if($mf_input_label_status == 'yes'){
-			?>
-			<label class="mf-input-label" for="mf-input-range-<?php echo esc_attr($this->get_id()); ?>"><?php echo esc_html($mf_input_label); ?>
-				<span class="mf-input-required-indicator"><?php echo esc_html(($mf_input_required === 'yes') ? '*' : '');?></span>
-			</label>
+		<div className="mf-input-wrapper">
+			<?php if ( 'yes' == $mf_input_label_status ): ?>
+				<label className="mf-input-label" htmlFor="mf-input-range-<?php echo esc_attr( $this->get_id() ); ?>"><?php echo apply_filters( 'metform_label_text', esc_html($mf_input_label), $render_on_editor ); ?>
+					<span className="mf-input-required-indicator"><?php echo esc_html( ($mf_input_required === 'yes') ? '*' : '' );?></span>
+				</label>
+			<?php endif; ?>
+
+			<div className="range-slider">
 			<?php
-		}
-		?>
-		
-		<div class="range-slider">
-
-		<?php
-			$default_value = '';
-			if(!empty($mf_input_range_default_value)){
-				if(is_numeric($mf_input_range_default_value)){
-					$default_value = $mf_input_range_default_value;
-				} elseif (is_string($mf_input_range_default_value)) {
-	
-					$split_text = explode(',', $mf_input_range_default_value);
-
-
-					if(is_numeric(trim($split_text[0])) && is_numeric(trim($split_text[1]))){
-						$default_value = trim($split_text[0]) . ',' . trim($split_text[1]);
+				$default_value = '';
+				if(!empty($mf_input_range_default_value)){
+					if(is_numeric($mf_input_range_default_value)){
+						$default_value = $mf_input_range_default_value;
+					} elseif (is_string($mf_input_range_default_value)) {
+						$split_text = explode(',', $mf_input_range_default_value);
+						if(is_numeric(trim($split_text[0])) && is_numeric(trim($split_text[1]))){
+							$default_value = trim($split_text[0]) . ',' . trim($split_text[1]);
+						}
 					}
-					
 				}
-			}
 
-			
-			// if(($default_value == $mf_input_min_length_range) && ($default_value == $mf_input_max_length_range)){
-			// 	$default_value = $mf_input_min_length_range + 1;
-			// } elseif ($default_value >= $mf_input_max_length_range) {
-			// 	$default_value = $mf_input_max_length_range;
-			// }  elseif ($default_value <= $mf_input_min_length_range) {
-			// 	$default_value = $mf_input_min_length_range - 1;
-			// }
-		?>
+				$minAttr = $mf_input_min_length_range === '' ? '' : 'min="'. esc_attr( $mf_input_min_length_range ) .'"';
+				$multipile_value = explode(",",$default_value);
 
-			<input class="mf-input mf-rs-range <?php echo ((isset($mf_input_validation_type) && $mf_input_validation_type !='none') || isset($mf_input_required) && $mf_input_required === 'yes')  ? 'mf-input-do-validate' : ''; ?> <?php echo $class; ?>" id="mf-input-range-<?php echo esc_attr($this->get_id()); ?>" 
-				name="<?php echo esc_attr($mf_input_name); ?>" 
-				<?php //echo esc_attr(($mf_input_required === 'yes') ? 'required' : '')?>
-				<?php //echo esc_attr($mf_input_readonly_status); ?>
-				value="<?php echo esc_attr($default_value); ?>"
-				min="<?php echo esc_attr(($mf_input_min_length_range != '') ? $mf_input_min_length_range : 1); ?>"
-				max="<?php echo esc_attr(($mf_input_max_length_range != '') ? $mf_input_max_length_range : 100); ?>"
-				step="<?php echo esc_attr($mf_input_steps_control);?>"
-				range="<?php echo $mf_input_range_control;?>"
-			>
+				if ($mf_input_range_control == 'true') {
+			?>
+				<${props.InputRange}
+					maxValue=${<?php echo esc_attr(($mf_input_max_length_range != '') ? $mf_input_max_length_range : 100); ?>}
+					minValue=${<?php echo esc_attr(($mf_input_min_length_range != '') ? $mf_input_min_length_range : 0); ?>}
+					step=${<?php echo esc_attr($mf_input_steps_control);?>}
+					onChange=${(el) => {
+						parent.handleMultipileRangeChange(el, '<?php echo esc_attr($mf_input_name); ?>')
+					}}
+					value=${
+						parent.state.formData['<?php echo esc_attr($mf_input_name); ?>'] ? {min: parent.state.formData['<?php echo esc_attr($mf_input_name); ?>']['0'], max: parent.state.formData['<?php echo esc_attr($mf_input_name); ?>']['1']} : {min: 
+						<?php if(esc_attr($default_value)) { ?>
+							<?php echo $multipile_value[1] ? $mf_input_min_length_range <= $multipile_value[0] ? $multipile_value[0] : $mf_input_min_length_range : $multipile_value[0] ?>
+						<?php } else { echo esc_attr(($mf_input_min_length_range != '') ? $mf_input_min_length_range : 0); } ?>, max: 
+						<?php if(esc_attr($default_value)) { ?>
+							<?php echo $multipile_value[1] ? $mf_input_max_length_range <= $multipile_value[1] ? $mf_input_max_length_range : $multipile_value[1] : 100 ?>
+						<?php } else { echo esc_attr(($mf_input_max_length_range != '') ? $mf_input_max_length_range : 100); } ?>
+						}
+					}
+					name="<?php echo esc_attr($mf_input_name); ?>"
+					/>
+				<?php } else { ?>
+					<${props.InputRange}
+						maxValue=${<?php echo esc_attr(($mf_input_max_length_range != '') ? $mf_input_max_length_range : 100); ?>}
+						minValue=${<?php echo esc_attr(($mf_input_min_length_range != '') ? $mf_input_min_length_range : 0); ?>}
+						step=${<?php echo esc_attr($mf_input_steps_control);?>}
+						onChange=${(el) => {
+							parent.handleRangeChange(el, '<?php echo esc_attr($mf_input_name); ?>')
+						}}
+						value=${<?php 
+							if(esc_attr($default_value)) { ?>
+								Number(parent.state.formData['<?php echo esc_attr($mf_input_name); ?>']) || <?php if ($mf_input_min_length_range <= $multipile_value[0]) {
+									echo $multipile_value[0] >= $mf_input_max_length_range ? $mf_input_max_length_range : $multipile_value[0];
+								} else {
+									echo $mf_input_min_length_range;
+								} ?>
+							<?php } else { ?>
+								Number(parent.state.formData['<?php echo esc_attr($mf_input_name); ?>']) || <?php echo $mf_input_min_length_range; ?>
+							<?php }
+						?>}
+						name="<?php echo esc_attr($mf_input_name); ?>" 
+						/>
+				<?php } ?>
+			</div>
+
+			<?php if ( !$is_edit_mode ) : ?>
+				<${validation.ErrorMessage}
+					errors=${validation.errors}
+					name="<?php echo esc_attr( $mf_input_name ); ?>"
+					as=${html`<span className="mf-error-message"></span>`}
+					/>
+			<?php endif; ?>
 			
+			<?php echo '' != $mf_input_help_text ? '<span className="mf-input-help">'. apply_filters( 'metform_help_text', esc_html($mf_input_help_text), $render_on_editor ) .'</span>' : ''; ?>
 		</div>
 
+		<?php echo $inputWrapEnd; ?>
 
 		<?php
-		if($mf_input_help_text != ''){
-			echo "<span class='mf-input-help'>".esc_html($mf_input_help_text)."</span>";
-		}
-		echo "</div>";
     }
     
 }

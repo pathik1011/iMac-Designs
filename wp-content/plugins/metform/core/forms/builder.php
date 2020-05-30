@@ -15,21 +15,11 @@ Class Builder{
         exit;
     }
 
-    public function get_form_content( $form_id ){
-        $form = get_post($form_id);
-        $content = 0;
-        if($form != null){
-            $content = get_post_meta($form->ID, '_elementor_data');
-        }
-        
-        return $content;
-        exit;
-    }
-
-    public function create_form($title, $template_id = 0, $data = ''){
+    public function create_form($title, $template_id = 0, $data = []){
         $template_id = 'template-' . (($template_id == '') ? 0 : $template_id);
         $title = ($title == '' ? 'New Form # ' . time() : $title);
-        $template_content = ($data != '') ? json_decode($data) : \MetForm\Templates\Base::instance()->get_template_contents($template_id);
+        $template_content = \MetForm\Templates\Base::instance()->get_template_contents($template_id);
+        
         $user_id = get_current_user_id();
 
         $defaults = array(
